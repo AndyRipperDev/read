@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/src/semantic
+/.idea
 /.pnp
 .pnp.js
 
