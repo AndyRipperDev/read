@@ -23,13 +23,22 @@ class BookUploadComponent extends React.Component {
         var zip = new JSZip();
         let books = [];
         let addBookCallback = this.props.addBooks;
+
+        const onFilesProcessed = (book) =>
+        {
+                books.push(book);
+                addBookCallback(books);
+        }
+
         for (let i = 0; i < files.length; i++) {
             let f = files[i];
-            let chapters = [];
+            let chapters = []
+            let images = {}
             JSZip.loadAsync(f)
                 .then(function (zip) {
                     let numFiles = 0;
                     let zipNames = []
+                    let imageExtensions =["jpg","jpeg","gif","png"]
                     zip.forEach((relativePath, zipEntry)=>{
                         let extension = relativePath.split('.').pop();
                         if (extension == "xhtml" || extension == "html")
@@ -37,24 +46,34 @@ class BookUploadComponent extends React.Component {
                             numFiles++;
                             zipNames.push(zipEntry.name)
                         }
+                        else if(imageExtensions.includes(extension))
+                        {
+                            numFiles++
+                        }
                     });
                     let processChapter = (relativePath, zipEntry) => {
                         let extension = relativePath.split('.').pop();
+                        let filename = relativePath.replace(/^.*[\\\/]/, '')
                         if (extension == "xhtml" || extension == "html") {
                             zipEntry.async("text").then(
                                 (txt) => {
-                                    console.log(zipNames.indexOf(zipEntry.name))
-                                    console.log(zipEntry.name)
                                     chapters[zipNames.indexOf(zipEntry.name)] = new chapter(txt)
-                                    numFiles--;
-                                }).then(() => {
+                                    numFiles--
                                     if (numFiles == 0) {
-                                        books.push(new book(chapters));
-                                        addBookCallback(books);
+                                        onFilesProcessed(new book(chapters,images))
                                     }
                                 }
                             )
-
+                        }
+                        if(imageExtensions.includes(extension))
+                        {
+                            zipEntry.async("base64").then((image)=>{
+                                images[filename] = {"image":image, "extension":extension}
+                                numFiles--
+                                if (numFiles == 0) {
+                                    onFilesProcessed(new book(chapters,images))
+                                }
+                            })
                         }
                     };
                     processChapter = processChapter.bind(this);

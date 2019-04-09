@@ -39,7 +39,7 @@ class PageComponent extends React.Component
         let leafNodes = nodes.filter(function (element) {
             let leafNode = true
             for (let childNode of element.childNodes) {
-                if (childNode.nodeType === 1) {
+                if (childNode.nodeType === 1 && element.nodeName != "P") {
                     leafNode = false
                     break;
                 }

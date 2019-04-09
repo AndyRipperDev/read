@@ -26,11 +26,15 @@ class WholeChapterComponent extends React.Component
     {
         console.log(e)
         if (e.deltaY < 0 && window.scrollY==0) {
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
             this.props.previousChapter()
 
         }
         if (e.deltaY > 0  && (window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-           this.props.nextChapter()
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            this.props.nextChapter()
 
         }
     }
