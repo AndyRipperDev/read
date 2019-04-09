@@ -4,6 +4,7 @@ class chapter
     constructor(text)
     {
         this.content = new DOMParser().parseFromString(text,"text/xml");
+
     }
 
     get bodyHtml()
@@ -13,23 +14,9 @@ class chapter
         return body.innerHTML;
     }
 
-    get bodyText()
+    get imageNodes()
     {
-        let root = this.content.getElementsByTagName("html")[0];
-        let body = root.getElementsByTagName("body")[0];
-        return body.textContent;
-    }
-
-    getLeafTag(i)
-    {
-        let root = this.content.getElementsByTagName("html")[0];
-        const f = (child) =>
-        {
-            if(child.hasChildNodes())
-            {
-                f(child)
-            }
-        }
+        return this.content.getElementsByTagName("img");
     }
 }
 

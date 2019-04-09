@@ -22,15 +22,18 @@ class BookReaderComponent extends React.Component {
 
 
     render() {
+
         if (this.props.books[0]) {
             return <div>
                 <Button onClick={this.previousChapter}>previous chapter</Button>
                 <Button onClick={this.nextChapter}>next chapter</Button>
                 <Button onClick={this.previousPage}>previous page</Button>
                 <Button onClick={this.nextPage}>next page</Button>
-                {/*<PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)} page={this.state.currentPage}/>*/}
+                {/*<img src={`data:image/jpeg;base64,${binaryData}`} />*/}
+
+                <PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}  page={this.state.currentPage}/>
                 {/*<PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)} page={this.state.currentPage+1}/>*/}
-                <WholeChapterComponent previousChapter={this.previousChapter} nextChapter={this.nextChapter} chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}/>
+                {/*<WholeChapterComponent previousChapter={this.previousChapter} nextChapter={this.nextChapter} chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}/>*/}
             </div>
         } else
             return <div></div>
