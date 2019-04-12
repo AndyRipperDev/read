@@ -19,8 +19,8 @@ class BookUploadComponent extends React.Component {
 
     handleFormChange = (event) => {
         let files = event.target.files;
-        var JSZip = require("jszip");
-        var zip = new JSZip();
+        const JSZip = require("jszip");
+        const zip = new JSZip();
         let books = [];
         let addBookCallback = this.props.addBooks;
 
@@ -28,50 +28,57 @@ class BookUploadComponent extends React.Component {
         {
                 books.push(book);
                 addBookCallback(books);
-        }
+        };
 
         for (let i = 0; i < files.length; i++) {
             let f = files[i];
-            let chapters = []
-            let images = {}
+            let chapters = [];
+            let stylesheets = [];
+            let images = {};
             JSZip.loadAsync(f)
                 .then(function (zip) {
                     let numFiles = 0;
-                    let zipNames = []
-                    let imageExtensions =["jpg","jpeg","gif","png"]
+                    let zipNames = [];
+                    let imageExtensions = ["jpg", "jpeg", "gif", "png"];
                     zip.forEach((relativePath, zipEntry)=>{
                         let extension = relativePath.split('.').pop();
                         if (extension == "xhtml" || extension == "html")
                         {
                             numFiles++;
                             zipNames.push(zipEntry.name)
-                        }
-                        else if(imageExtensions.includes(extension))
+                        } else if (imageExtensions.includes(extension) || extension == "css")
                         {
                             numFiles++
                         }
                     });
                     let processChapter = (relativePath, zipEntry) => {
                         let extension = relativePath.split('.').pop();
-                        let filename = relativePath.replace(/^.*[\\\/]/, '')
+                        let filename = relativePath.replace(/^.*[\\\/]/, '');
                         if (extension == "xhtml" || extension == "html") {
                             zipEntry.async("text").then(
                                 (txt) => {
-                                    chapters[zipNames.indexOf(zipEntry.name)] = new chapter(txt)
-                                    numFiles--
+                                    chapters[zipNames.indexOf(zipEntry.name)] = new chapter(txt);
+                                    numFiles--;
                                     if (numFiles == 0) {
-                                        onFilesProcessed(new book(chapters,images))
+                                        onFilesProcessed(new book(chapters, images, stylesheets))
                                     }
                                 }
                             )
-                        }
-                        if(imageExtensions.includes(extension))
+                        } else if (imageExtensions.includes(extension))
                         {
                             zipEntry.async("base64").then((image)=>{
-                                images[filename] = {"image":image, "extension":extension}
-                                numFiles--
+                                images[filename] = {"image": image, "extension": extension};
+                                numFiles--;
                                 if (numFiles == 0) {
-                                    onFilesProcessed(new book(chapters,images))
+                                    onFilesProcessed(new book(chapters, images, stylesheets))
+                                }
+                            })
+                        } else if (extension == "css") {
+                            zipEntry.async("text").then((css) => {
+                                numFiles--;
+                                stylesheets.push(css);
+                                if (numFiles == 0) {
+                                    onFilesProcessed(new book(chapters, images, stylesheets))
                                 }
                             })
                         }

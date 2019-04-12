@@ -2,7 +2,7 @@ import {ADD_BOOKS} from "../actionTypes";
 
 const initialState = {
     books:  []
-}
+};
 
 function bookReducer(state = initialState, action) {
     console.log(action);
@@ -11,7 +11,7 @@ function bookReducer(state = initialState, action) {
             return Object.assign({}, state, {
                 ...state,
                 books: state.books.concat(action.payload)
-            })
+            });
         default:
             return state
     }

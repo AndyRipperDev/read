@@ -1,12 +1,13 @@
 import React from 'react';
 import './App.css';
 import './semantic/dist/semantic.min.css'
-import { createStore } from 'redux'
+import {createStore} from 'redux'
 import bookReducer from "./redux/reducers/bookReducer";
 import {Provider} from "react-redux";
 import BookUploadComponent from "./components/BookUploadComponent";
 import BookReaderComponent from "./components/BookReaderComponent";
-const store = createStore(bookReducer)
+
+const store = createStore(bookReducer);
 
 class App extends React.Component{
 

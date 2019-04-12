@@ -1,6 +1,5 @@
 import React from "react";
-import {Button, Container} from "semantic-ui-react";
-import {connect} from "react-redux";
+import {Container} from "semantic-ui-react";
 
 class WholeChapterComponent extends React.Component
 {
@@ -24,7 +23,7 @@ class WholeChapterComponent extends React.Component
 
     handleScroll = (e) =>
     {
-        console.log(e)
+        console.log(e);
         if (e.deltaY < 0 && window.scrollY==0) {
             document.body.scrollTop = 0; // For Safari
             document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
@@ -37,16 +36,16 @@ class WholeChapterComponent extends React.Component
             this.props.nextChapter()
 
         }
-    }
+    };
 
     componentDidMount() {
-        window.addEventListener('wheel', this.handleScroll)
+        window.addEventListener('wheel', this.handleScroll);
         document.addEventListener("mousedown", this.handleMouseDown);
         document.addEventListener("mouseup", this.handleMouseUp);
     }
 
     componentWillUnmount() {
-        window.removeEventListener("wheel", this.handleScroll)
+        window.removeEventListener("wheel", this.handleScroll);
         document.removeEventListener("mousedown", this.handleMouseDown);
         document.removeEventListener("mouseup", this.handleMouseUp);
     }
