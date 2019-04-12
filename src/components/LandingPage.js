@@ -172,7 +172,7 @@ class MobileContainer extends Component {
           animation='push'
           inverted
           onHide={this.handleSidebarHide}
-          style={{minWidth: '100%', fontSize: '1.5em', textAlign: 'center'}}
+          style={{minWidth: '30%', fontSize: '1.2em', textAlign: 'center'}}
           vertical
           visible={sidebarOpened}
         >
@@ -183,9 +183,9 @@ class MobileContainer extends Component {
             <Menu.Item as='a' name='login' active={activeItem === 'login'} onClick={this.handleItemClickAndSidebarHide}>Log in</Menu.Item>
             <Menu.Item as='a' name='signup' active={activeItem === 'signup'} onClick={this.handleItemClickAndSidebarHide}>Sign Up</Menu.Item>
        </Sidebar>
-      
+       
       <Sidebar.Pusher dimmed={sidebarOpened}>
-     {/* <Sticky style={{ minHeight: 81 }}>*/}
+     {/* <Sticky style={{ minHeight: 60 }}>*/}
           <Segment
             inverted
             textAlign='center'
@@ -199,6 +199,7 @@ class MobileContainer extends Component {
               secondary
               size='large'
               >
+              
                 <Menu.Item onClick={this.handleToggle}>
                   <Icon name='sidebar' />
                 </Menu.Item>
@@ -209,15 +210,17 @@ class MobileContainer extends Component {
                   <Button as='a' inverted primary style={{ marginLeft: '0.5em' }} onClick={this.handleOpenSignUp}>
                     Sign Up
                   </Button>
-                </Menu.Item>
+                </Menu.Item>     
               </Menu>
-            </Container>
+              </Container>
+            
             
           </Segment>
-         {/* </Sticky>*/}     
+         {/* </Sticky>*/}  
+   
           <LandingPageHeading mobile />
           
-
+         
           <Dimmer active={activeLogin} onClickOutside={this.handleCloseLogin} page>
            <LoginPage/>
           </Dimmer>
@@ -227,6 +230,7 @@ class MobileContainer extends Component {
           </Dimmer>
           {children}
         </Sidebar.Pusher> 
+        
 
       </Responsive>
     )
