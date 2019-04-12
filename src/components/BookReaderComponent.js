@@ -3,7 +3,7 @@ import parse from "html-react-parser";
 import PageComponent from "./PageComponent";
 import {connect} from "react-redux";
 import {Button} from "semantic-ui-react";
-import WholeChapterComponent from "./WholeChapterComponent";
+import StylesheetComponent from "./StylesheetComponent";
 
 const mapStateToProps = state => {
     return {
@@ -24,13 +24,13 @@ class BookReaderComponent extends React.Component {
     render() {
 
         if (this.props.books[0]) {
-            return <div>
+            console.log(this.props.books[0].stylesheets);
+            return <div style={{"overflow": "hidden"}}>
+                <StylesheetComponent stylesheets={this.props.books[0].stylesheets}/>
                 <Button onClick={this.previousChapter}>previous chapter</Button>
                 <Button onClick={this.nextChapter}>next chapter</Button>
                 <Button onClick={this.previousPage}>previous page</Button>
                 <Button onClick={this.nextPage}>next page</Button>
-                {/*<img src={`data:image/jpeg;base64,${binaryData}`} />*/}
-
                 <PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}  page={this.state.currentPage}/>
                 {/*<PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)} page={this.state.currentPage+1}/>*/}
                 {/*<WholeChapterComponent previousChapter={this.previousChapter} nextChapter={this.nextChapter} chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}/>*/}
@@ -39,6 +39,9 @@ class BookReaderComponent extends React.Component {
             return <div></div>
     }
 
+    componentDidMount() {
+
+    }
 
     previousChapter = () => {
         this.setState({
@@ -50,7 +53,7 @@ class BookReaderComponent extends React.Component {
         this.setState({
             currentChapter: this.state.currentChapter + 1,
         });
-    }
+    };
 
     previousPage = () => {
         this.setState({

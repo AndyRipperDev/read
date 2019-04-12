@@ -642,7 +642,7 @@ $.fn.search = function(parameters) {
                 }
               });
             });
-            $.merge(exactResults, fuzzyResults)
+              $.merge(exactResults, fuzzyResults);
             $.merge(results, exactResults);
             return results;
           }
