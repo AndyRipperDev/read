@@ -1,0 +1,14 @@
+.PageComponent
+{
+    height: 20vh;
+}
+
+.PageComponent *
+{
+    max-height: 20vh;
+}
+
+.PageComponent img
+{
+    object-fit: contain;
+}

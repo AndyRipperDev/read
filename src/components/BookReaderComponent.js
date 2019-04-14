@@ -3,7 +3,7 @@ import parse from "html-react-parser";
 import PageComponent from "./PageComponent";
 import {connect} from "react-redux";
 import {Button} from "semantic-ui-react";
-import StylesheetComponent from "./StylesheetComponent";
+import BookStylesheetManager from "./BookStylesheetManager";
 
 const mapStateToProps = state => {
     return {
@@ -16,7 +16,7 @@ class BookReaderComponent extends React.Component {
         super(props);
         this.state = {
             currentChapter: 0,
-            currentPage: 1
+            currentPage: 1,
         }
     }
 
@@ -24,34 +24,36 @@ class BookReaderComponent extends React.Component {
     render() {
 
         if (this.props.books[0]) {
-            console.log(this.props.books[0].stylesheets);
-            return <div style={{"overflow": "hidden"}}>
-                <StylesheetComponent stylesheets={this.props.books[0].stylesheets}/>
+            let stylesheets = this.props.books[0].stylesheets;
+            return <div >
+                <BookStylesheetManager stylesheets={stylesheets}/>
                 <Button onClick={this.previousChapter}>previous chapter</Button>
                 <Button onClick={this.nextChapter}>next chapter</Button>
                 <Button onClick={this.previousPage}>previous page</Button>
                 <Button onClick={this.nextPage}>next page</Button>
-                <PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}  page={this.state.currentPage}/>
-                {/*<PageComponent chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)} page={this.state.currentPage+1}/>*/}
-                {/*<WholeChapterComponent previousChapter={this.previousChapter} nextChapter={this.nextChapter} chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}/>*/}
+                <PageComponent setCustomBookStylesheet={this.setCustomBookStylesheet}
+                               chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}
+                               page={this.state.currentPage}/>
             </div>
         } else
             return <div></div>
     }
 
-    componentDidMount() {
-
-    }
+    setCustomBookStylesheet = (stylesheet) => {
+        this.setState({"readerCustomBookStylesheet" : stylesheet})
+    };
 
     previousChapter = () => {
         this.setState({
             currentChapter: this.state.currentChapter - 1,
+            currentPage: 1
         });
     };
 
     nextChapter = () => {
         this.setState({
             currentChapter: this.state.currentChapter + 1,
+            currentPage: 1
         });
     };
 
