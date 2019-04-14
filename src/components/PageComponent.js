@@ -1,5 +1,5 @@
 import React from "react";
-import {Container} from "semantic-ui-react";
+import {Button, Container} from "semantic-ui-react";
 import "./PageComponent.css"
 
 const pageHeight = 800;
@@ -11,8 +11,7 @@ class PageComponent extends React.Component {
         super(props);
         this.chapterDivRef = React.createRef();
         this.state = {
-            firstNodeIndex: 0,
-            lastNodeIndex: -1,
+            currentPage: 1,
         }
     }
 
@@ -20,6 +19,8 @@ class PageComponent extends React.Component {
 
         if (this.props.chapter) {
             return <div ref={this.chapterDivRef}>
+                <Button onClick={this.previousPage}>previous page</Button>
+                <Button onClick={this.nextPage}>next page</Button>
                 <Container className={"PageComponent"} text>{this.props.chapter}</Container>
             </div>
         } else
@@ -27,8 +28,12 @@ class PageComponent extends React.Component {
 
     }
 
+    componentDidMount() {
+        this.hideExceptPage(this.state.currentPage)
+    }
+
     componentDidUpdate() {
-        this.hideExceptPage(this.props.page)
+        this.hideExceptPage(this.state.currentPage)
     }
 
 
@@ -57,7 +62,7 @@ class PageComponent extends React.Component {
             for(let i = 0; i < leafNodes.length; i++)
             {
                 let leafNode = leafNodes[i]
-                leafNode.style.display = "inherit"
+                leafNode.style.display = ""
                 if(i < firstVisibleNodeIndex || i > lastNodeIndex)
                 {
                     leafNode.style.display = "none"
@@ -79,8 +84,10 @@ class PageComponent extends React.Component {
             currentPage++
         }while(currentPage != page)
 
-        if(firstNodeIndex > leafNodes.length && lastNodeIndex > leafNodes.length)
-            console.log("lastPage");
+        console.log("First: ", firstNodeIndex, "Last: ", lastNodeIndex, "length: ", leafNodes.length)
+        this.lastPage = firstNodeIndex > leafNodes.length || lastNodeIndex > leafNodes.length;
+        console.log(this.lastPage)
+
     }
 
     isElementInViewport = (element) => {
@@ -91,6 +98,20 @@ class PageComponent extends React.Component {
         );
     }
 
+    previousPage = () => {
+        this.setState({
+            currentPage: this.state.currentPage>1?this.state.currentPage - 1:1
+        });
+    };
+
+    nextPage = () => {
+        if (!this.lastPage)
+            this.setState({
+                currentPage: this.state.currentPage + 1,
+            })
+
+
+    }
 }
 
 export default PageComponent

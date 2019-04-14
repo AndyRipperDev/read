@@ -16,7 +16,6 @@ class BookReaderComponent extends React.Component {
         super(props);
         this.state = {
             currentChapter: 0,
-            currentPage: 1,
         }
     }
 
@@ -29,11 +28,8 @@ class BookReaderComponent extends React.Component {
                 <BookStylesheetManager stylesheets={stylesheets}/>
                 <Button onClick={this.previousChapter}>previous chapter</Button>
                 <Button onClick={this.nextChapter}>next chapter</Button>
-                <Button onClick={this.previousPage}>previous page</Button>
-                <Button onClick={this.nextPage}>next page</Button>
                 <PageComponent setCustomBookStylesheet={this.setCustomBookStylesheet}
-                               chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}
-                               page={this.state.currentPage}/>
+                               chapter={parse(this.props.books[0].getChapter(this.state.currentChapter).bodyHtml)}/>
             </div>
         } else
             return <div></div>
@@ -45,7 +41,7 @@ class BookReaderComponent extends React.Component {
 
     previousChapter = () => {
         this.setState({
-            currentChapter: this.state.currentChapter - 1,
+            currentChapter: this.state.currentChapter>0?this.state.currentChapter - 1:0,
             currentPage: 1
         });
     };
@@ -56,18 +52,6 @@ class BookReaderComponent extends React.Component {
             currentPage: 1
         });
     };
-
-    previousPage = () => {
-        this.setState({
-            currentPage: this.state.currentPage - 1,
-        });
-    };
-
-    nextPage = () => {
-        this.setState({
-            currentPage: this.state.currentPage + 1,
-        });
-    }
 }
 
 export default connect(mapStateToProps)(BookReaderComponent)
