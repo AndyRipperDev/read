@@ -4,8 +4,8 @@ import {createStore} from 'redux'
 import bookReducer from "./redux/reducers/bookReducer";
 import {Provider} from "react-redux";
 import BookUploadComponent from "./components/BookUploadComponent";
-import BookReaderComponent from "./components/BookReaderComponent";
 import './App.css';
+import BookReaderWrapperComponent from "./components/BookReaderWrapperComponent";
 
 const store = createStore(bookReducer);
 
@@ -16,7 +16,7 @@ class App extends React.Component{
         return <Provider store={store}>
                     <div>
                         <BookUploadComponent/>
-                        <BookReaderComponent/>
+                        <BookReaderWrapperComponent/>
                     </div>
                 </Provider>
     }
