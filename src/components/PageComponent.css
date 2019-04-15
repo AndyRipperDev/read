@@ -1,14 +1,14 @@
-.PageComponent
+.PageBookReader
 {
-    height: 20vh;
+    height: 80vh;
 }
 
-.PageComponent *
+.PageBookReader *
 {
-    max-height: 20vh;
+    max-height: 80vh;
 }
 
-.PageComponent img
+.PageBookReader img
 {
     object-fit: contain;
 }
