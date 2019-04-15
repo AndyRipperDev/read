@@ -102,9 +102,16 @@ class PageBookReader extends React.Component {
     };
 
     previousPage = () => {
-        this.setState({
-            currentPage: this.state.currentPage > 1 ? this.state.currentPage - 1 : 1
-        });
+        if(this.state.currentPage > 1)
+        {
+            this.setState({
+                currentPage: this.state.currentPage - 1
+            });
+        }
+        else
+        {
+            this.previousChapter();
+        }
     };
 
     nextPage = () => {
@@ -112,6 +119,10 @@ class PageBookReader extends React.Component {
             this.setState({
                 currentPage: this.state.currentPage + 1,
             })
+        else
+        {
+            this.nextChapter();
+        }
     };
 
     previousChapter = () => {
