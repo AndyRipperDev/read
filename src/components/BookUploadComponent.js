@@ -26,6 +26,7 @@ class BookUploadComponent extends React.Component {
 
         const onFilesProcessed = (book) =>
         {
+            console.log(book);
                 books.push(book);
                 addBookCallback(books);
         };
@@ -51,6 +52,7 @@ class BookUploadComponent extends React.Component {
                             numFiles++
                         }
                     });
+                    console.log(numFiles)
                     let processChapter = (relativePath, zipEntry) => {
                         let extension = relativePath.split('.').pop();
                         let filename = relativePath.replace(/^.*[\\\/]/, '');
@@ -82,6 +84,7 @@ class BookUploadComponent extends React.Component {
                                 }
                             })
                         }
+                        console.log(numFiles)
                     };
                     processChapter = processChapter.bind(this);
                     zip.forEach(processChapter);

@@ -3,7 +3,7 @@ import parse from "html-react-parser";
 import PageBookReader from "./PageBookReader";
 import {connect} from "react-redux";
 import {Button} from "semantic-ui-react";
-import BookStylesheetManager from "./BookStylesheetManager";
+
 
 const mapStateToProps = state => {
     return {
