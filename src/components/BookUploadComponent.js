@@ -1,9 +1,9 @@
 import React from "react";
 import {Button, Label, Message} from "semantic-ui-react";
-import chapter from "../chapter";
-import book from "../book"
 import {connect} from "react-redux";
 import {addBooks} from "../redux/actionCreators";
+import book from "../book";
+import chapter from "../chapter";
 
 const mapDispatchToProps = dispatch => ({
     addBooks: (books) => dispatch(addBooks(books))
@@ -19,75 +19,64 @@ class BookUploadComponent extends React.Component {
 
     handleFormChange = (event) => {
         let files = event.target.files;
+        let addBooksCallback = this.props.addBooks;
+        let books = []
+        let bookCount = files.length
         const JSZip = require("jszip");
         const zip = new JSZip();
-        let books = [];
-        let addBookCallback = this.props.addBooks;
-
-        const onFilesProcessed = (book) =>
+        for(let f of files)
         {
-            console.log(book);
-                books.push(book);
-                addBookCallback(books);
-        };
-
-        for (let i = 0; i < files.length; i++) {
-            let f = files[i];
-            let chapters = [];
-            let stylesheets = [];
-            let images = {};
             JSZip.loadAsync(f)
                 .then(function (zip) {
-                    let numFiles = 0;
-                    let zipNames = [];
-                    let imageExtensions = ["jpg", "jpeg", "gif", "png"];
-                    zip.forEach((relativePath, zipEntry)=>{
-                        let extension = relativePath.split('.').pop();
-                        if (extension == "xhtml" || extension == "html")
-                        {
-                            numFiles++;
-                            zipNames.push(zipEntry.name)
-                        } else if (imageExtensions.includes(extension) || extension == "css")
-                        {
-                            numFiles++
-                        }
-                    });
-                    console.log(numFiles)
-                    let processChapter = (relativePath, zipEntry) => {
-                        let extension = relativePath.split('.').pop();
+                    zip.forEach((relativePath, zipEntry) => {
                         let filename = relativePath.replace(/^.*[\\\/]/, '');
-                        if (extension == "xhtml" || extension == "html") {
-                            zipEntry.async("text").then(
-                                (txt) => {
-                                    chapters[zipNames.indexOf(zipEntry.name)] = new chapter(txt);
-                                    numFiles--;
-                                    if (numFiles == 0) {
-                                        onFilesProcessed(new book(chapters, images, stylesheets))
+                        if (filename == "content.opf") {
+                            zipEntry.async("text").then((text) => {
+
+                                let contentFileParser = new DOMParser().parseFromString(text, "text/xml");
+                                let filePromises = []
+                                let chapters = []
+                                let images = {}
+                                let stylesheets = []
+                                let spineIdrefs = []
+                                for (let spineElement of contentFileParser.getElementsByTagName("spine")[0].children)
+                                {
+                                    spineIdrefs.push(spineElement.getAttribute("idref"))
+                                }
+                                for (let manifestElement of contentFileParser.getElementsByTagName("manifest")[0].children) {
+                                    let filePath = manifestElement.getAttribute("href")
+                                    let fileName = filePath.replace(/^.*[\\\/]/, '');
+                                    let extension = filePath.replace(/^.*[\\\/]/, '');
+                                    switch(manifestElement.getAttribute("media-type"))
+                                    {
+                                        case 'image/jpeg':
+                                            filePromises.push(zip.file(filePath).async("base64").then((val)=>{images[fileName] = {"image": val, "extension": extension}}))
+                                            break;
+                                        case 'application/xhtml+xml':
+                                            let id = manifestElement.getAttribute("id")
+                                            let chapterIndex = spineIdrefs.indexOf(id);
+                                            filePromises.push(zip.file(filePath).async("text").then((val)=>{chapters[chapterIndex]=new chapter(val)}))
+                                            break;
+                                        case 'text/css':
+                                            filePromises.push(zip.file(filePath).async("text").then((val)=>{stylesheets.push(val)}))
+                                            break;
+
                                     }
                                 }
-                            )
-                        } else if (imageExtensions.includes(extension))
-                        {
-                            zipEntry.async("base64").then((image)=>{
-                                images[filename] = {"image": image, "extension": extension};
-                                numFiles--;
-                                if (numFiles == 0) {
-                                    onFilesProcessed(new book(chapters, images, stylesheets))
-                                }
+                                let bookPromise = Promise.all(filePromises).then(()=>{
+                                    books.push(new book(chapters,images,stylesheets))
+                                    bookCount--;
+                                    if(bookCount==0)
+                                    {
+                                        console.log(stylesheets)
+                                        addBooksCallback(books);
+                                    }
+                                })
+
                             })
-                        } else if (extension == "css") {
-                            zipEntry.async("text").then((css) => {
-                                numFiles--;
-                                stylesheets.push(css);
-                                if (numFiles == 0) {
-                                    onFilesProcessed(new book(chapters, images, stylesheets))
-                                }
-                            })
+
                         }
-                        console.log(numFiles)
-                    };
-                    processChapter = processChapter.bind(this);
-                    zip.forEach(processChapter);
+                    })
                 })
         }
     };

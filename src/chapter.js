@@ -16,7 +16,7 @@ class chapter
 
     get imageNodes()
     {
-        return this.content.getElementsByTagName("img");
+        return this.content.querySelectorAll("image, img");
     }
 }
 

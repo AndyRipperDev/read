@@ -8,10 +8,19 @@ class book
             let imageNodes = chapter.imageNodes;
             for(let imageNode of imageNodes)
             {
-                const filename = imageNode.src.replace(/^.*[\\\/]/, '');
-                let image = images[filename];
-                imageNode.src = "data:image/" + image.extension + ";base64," + image.image;
-                console.log(imageNode)
+                console.log(imageNode.getAttribute("xlink:href"))
+                if(imageNode.getAttribute("src"))
+                {
+                    const filename = imageNode.src.replace(/^.*[\\\/]/, '');
+                    let image = images[filename];
+                    imageNode.src = "data:image/" + image.extension + ";base64," + image.image;
+                }
+                else if(imageNode.getAttribute("xlink:href"))
+                {
+                    const filename = imageNode.getAttribute("xlink:href").replace(/^.*[\\\/]/, '');
+                    let image = images[filename];
+                    imageNode.setAttribute("xlink:href","data:image/" + image.extension + ";base64," + image.image);
+                }
             }
         }
         this.stylesheets_ = stylesheets
