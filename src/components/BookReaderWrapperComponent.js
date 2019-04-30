@@ -1,14 +1,13 @@
 import React from "react";
-import parse from "html-react-parser";
 import PageBookReader from "./PageBookReader";
 import {connect} from "react-redux";
 import {Button} from "semantic-ui-react";
 
 
 const mapStateToProps = state => {
-    return {
-        books: state.books,
-    }
+  return {
+    books: state.books
+  };
 };
 
 class BookReaderWrapperComponent  extends React.Component {
@@ -26,4 +25,4 @@ class BookReaderWrapperComponent  extends React.Component {
 
 }
 
-export default connect(mapStateToProps)(BookReaderWrapperComponent)
+export default connect(mapStateToProps)(BookReaderWrapperComponent);

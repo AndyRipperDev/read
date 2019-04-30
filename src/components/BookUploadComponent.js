@@ -6,16 +6,29 @@ import book from "../book";
 import chapter from "../chapter";
 
 const mapDispatchToProps = dispatch => ({
-    addBooks: (books) => dispatch(addBooks(books))
+  addBooks: books => dispatch(addBooks(books))
 });
 
+const mapStateToProps = state => {
+  return {
+    books: state.books
+  };
+};
 
 class BookUploadComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      redirect: false
+    };
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {value: undefined};
-    }
+  handleFormChange = event => {
+    let files = event.target.files;
+    const JSZip = require("jszip");
+    const zip = new JSZip();
+    let books = [];
+    let addBookCallback = this.props.addBooks;
 
     handleFormChange = (event) => {
         let files = event.target.files;
@@ -115,6 +128,10 @@ class BookUploadComponent extends React.Component {
             </Message>
         }
     }
+  }
 }
 
-export default connect(null, mapDispatchToProps)(BookUploadComponent)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BookUploadComponent);
