@@ -2,7 +2,9 @@ import LoginPage from "./LoginPage";
 import SignUpPage from "./SignUpPage";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import book3 from "../imgs/book3.jpg";
+import book3 from "../imgs/book.jpg";
+import book from "../imgs/bookDigital.jpg";
+import book2 from "../imgs/bookDigital2.jpg";
 import {
   Button,
   Container,
@@ -15,8 +17,9 @@ import {
   Responsive,
   Segment,
   Sidebar,
-  Sticky,
-  Dimmer
+  Dimmer,
+  Visibility,
+  Transition
 } from "semantic-ui-react";
 
 const getWidth = () => {
@@ -36,7 +39,7 @@ const LandingPageHeading = ({ mobile }) => (
       textAlign: "center",
       color: "#fff",
       paddingTop: "110px",
-      minHeight: "550px"
+      minHeight: mobile ? "500px" : "950px"
     }}
     class="img-text-heading"
   >
@@ -63,9 +66,12 @@ const LandingPageHeading = ({ mobile }) => (
         paddingBottom: mobile ? "0.3em" : "1em"
       }}
     />
-    <Button primary size="huge">
-      Get Started
-      <Icon name="right arrow" />
+
+    <Button inverted animated size="huge">
+      <Button.Content visible>Get Started</Button.Content>
+      <Button.Content hidden>
+        <Icon name="arrow right" />
+      </Button.Content>
     </Button>
   </div>
 );
@@ -77,6 +83,19 @@ LandingPageHeading.propTypes = {
 class DesktopContainer extends Component {
   state = {};
   state = { activeItem: "home" };
+  state = { visible: true };
+
+  handleVisibility = () => this.setState({ visible: !this.state.visible });
+
+  handleVisibilityAndHideFixedMenu = () => {
+    this.setState({ visible: !this.state.visible });
+    this.setState({ fixed: false });
+  };
+
+  handleVisibilityAndShowFixedMenu = () => {
+    this.setState({ visible: !this.state.visible });
+    this.setState({ fixed: true });
+  };
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
@@ -86,78 +105,86 @@ class DesktopContainer extends Component {
   handleOpenSignUp = () => this.setState({ activeSignUp: true });
   handleCloseSignUp = () => this.setState({ activeSignUp: false });
 
+  hideFixedMenu = () => this.setState({ fixed: false });
+  showFixedMenu = () => this.setState({ fixed: true });
+
   render() {
     const { children } = this.props;
     const { activeItem } = this.state;
     const { activeLogin } = this.state;
     const { activeSignUp } = this.state;
+    const { fixed } = this.state;
+    const { visible } = this.state;
 
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
-        <Sticky style={{ minHeight: 60 }}>
-          <Segment
-            inverted
-            textAlign="center"
-            style={{ minHeight: 20, padding: "0.3em 0em" }}
-            vertical
-          >
-            <Menu
-              inverted
-              pointing
-              secondary
-              size="large"
-              //color='blue'
-            >
-              <Container>
-                <Menu.Item
-                  as="a"
-                  name="home"
-                  active={activeItem === "home"}
-                  onClick={this.handleItemClick}
-                >
-                  Home
-                </Menu.Item>
-                <Menu.Item
-                  as="a"
-                  name="introduction"
-                  active={activeItem === "introduction"}
-                  onClick={this.handleItemClick}
-                >
-                  Introduction
-                </Menu.Item>
-                <Menu.Item
-                  as="a"
-                  name="about"
-                  active={activeItem === "about"}
-                  onClick={this.handleItemClick}
-                >
-                  About
-                </Menu.Item>
-                <Menu.Item position="right">
-                  <Button
+        <Visibility
+          once={false}
+          onTopPassed={this.handleVisibility}
+          onTopPassedReverse={this.handleVisibilityAndHideFixedMenu}
+          onBottomPassed={this.handleVisibilityAndShowFixedMenu}
+          onBottomPassedReverse={this.handleVisibility}
+        >
+          <Transition.Group animation="fade down" duration={500}>
+            {visible && (
+              <Menu
+                fixed="top"
+                inverted
+                pointing={!fixed}
+                secondary={!fixed}
+                size="large"
+              >
+                <Container>
+                  <Menu.Item
                     as="a"
-                    inverted
-                    primary
-                    onClick={this.handleOpenLogin}
+                    name="home"
+                    active={activeItem === "home"}
+                    onClick={this.handleItemClick}
                   >
-                    Log in
-                  </Button>
-                  <Button
+                    Home
+                  </Menu.Item>
+                  <Menu.Item
                     as="a"
-                    inverted
-                    primary
-                    style={{ marginLeft: "0.5em" }}
-                    onClick={this.handleOpenSignUp}
+                    name="introduction"
+                    active={activeItem === "introduction"}
+                    onClick={this.handleItemClick}
                   >
-                    Sign Up
-                  </Button>
-                </Menu.Item>
-              </Container>
-            </Menu>
-          </Segment>
-        </Sticky>
+                    Introduction
+                  </Menu.Item>
+                  <Menu.Item
+                    as="a"
+                    name="about"
+                    active={activeItem === "about"}
+                    onClick={this.handleItemClick}
+                  >
+                    About
+                  </Menu.Item>
+                  <Menu.Item position="right">
+                    <Button
+                      as="a"
+                      inverted
+                      primary={fixed}
+                      onClick={this.handleOpenLogin}
+                    >
+                      Log in
+                    </Button>
+                    <Button
+                      as="a"
+                      inverted
+                      primary={fixed}
+                      style={{ marginLeft: "0.5em" }}
+                      onClick={this.handleOpenSignUp}
+                    >
+                      Sign Up
+                    </Button>
+                  </Menu.Item>
+                </Container>
+              </Menu>
+            )}
+          </Transition.Group>
 
-        <LandingPageHeading />
+          <LandingPageHeading />
+        </Visibility>
         <Dimmer
           active={activeLogin}
           onClickOutside={this.handleCloseLogin}
@@ -187,6 +214,9 @@ class MobileContainer extends Component {
   state = {};
   state = { activeItem: "home" };
 
+  hideFixedMenu = () => this.setState({ fixed: false });
+  showFixedMenu = () => this.setState({ fixed: true });
+
   handleSidebarHide = () => this.setState({ sidebarOpened: false });
   handleToggle = () => this.setState({ sidebarOpened: true });
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
@@ -207,128 +237,138 @@ class MobileContainer extends Component {
     const { activeItem } = this.state;
     const { activeLogin } = this.state;
     const { activeSignUp } = this.state;
+    const { fixed } = this.state;
 
     return (
       <Responsive
-        as={Sidebar.Pushable}
+        // as={Sidebar.Pushable}
         getWidth={getWidth}
         maxWidth={Responsive.onlyMobile.maxWidth}
       >
-        <Sidebar
-          as={Menu}
-          animation="push"
-          inverted
-          onHide={this.handleSidebarHide}
-          style={{ minWidth: "30%", fontSize: "1.2em", textAlign: "center" }}
-          vertical
-          visible={sidebarOpened}
-        >
-          <Menu.Item
-            as="a"
-            name="close"
-            style={{ textAlign: "right", paddingBottom: 40 }}
-            onClick={this.handleSidebarHide}
-          >
-            <Icon name="close" />
-          </Menu.Item>
-          <Menu.Item
-            as="a"
-            name="home"
-            active={activeItem === "home"}
-            onClick={this.handleItemClickAndSidebarHide}
-          >
-            Home
-          </Menu.Item>
-          <Menu.Item
-            as="a"
-            name="introduction"
-            active={activeItem === "introduction"}
-            onClick={this.handleItemClickAndSidebarHide}
-          >
-            Introduction
-          </Menu.Item>
-          <Menu.Item
-            as="a"
-            name="about"
-            active={activeItem === "about"}
-            onClick={this.handleItemClickAndSidebarHide}
-          >
-            About
-          </Menu.Item>
-          <Menu.Item
-            as="a"
-            name="login"
-            active={activeItem === "login"}
-            onClick={this.handleItemClickAndSidebarHide}
-          >
-            Log in
-          </Menu.Item>
-          <Menu.Item
-            as="a"
-            name="signup"
-            active={activeItem === "signup"}
-            onClick={this.handleItemClickAndSidebarHide}
-          >
-            Sign Up
-          </Menu.Item>
-        </Sidebar>
+        <div>
+          <Sidebar.Pushable as={Segment} style={{ transform: "none" }}>
+            <Sidebar
+              as={Menu}
+              animation="push"
+              inverted
+              onHide={this.handleSidebarHide}
+              style={{
+                minWidth: "30%",
+                fontSize: "1.2em",
+                textAlign: "center",
+                position: "fixed"
+              }}
+              vertical
+              visible={sidebarOpened}
+            >
+              <Menu.Item
+                as="a"
+                name="close"
+                style={{ textAlign: "right", paddingBottom: 40 }}
+                onClick={this.handleSidebarHide}
+              >
+                <Icon name="close" />
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="home"
+                active={activeItem === "home"}
+                onClick={this.handleItemClickAndSidebarHide}
+              >
+                Home
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="introduction"
+                active={activeItem === "introduction"}
+                onClick={this.handleItemClickAndSidebarHide}
+              >
+                Introduction
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="about"
+                active={activeItem === "about"}
+                onClick={this.handleItemClickAndSidebarHide}
+              >
+                About
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="login"
+                active={activeItem === "login"}
+                onClick={this.handleItemClickAndSidebarHide}
+              >
+                Log in
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="signup"
+                active={activeItem === "signup"}
+                onClick={this.handleItemClickAndSidebarHide}
+              >
+                Sign Up
+              </Menu.Item>
+            </Sidebar>
 
-        <Sidebar.Pusher dimmed={sidebarOpened}>
-          {/* <Sticky style={{ minHeight: 60 }}>*/}
-          <Segment
-            inverted
-            textAlign="center"
-            style={{ minHeight: 20, padding: "0.3em 0em" }}
-            vertical
-          >
-            <Container>
-              <Menu inverted pointing secondary size="large">
-                <Menu.Item onClick={this.handleToggle}>
-                  <Icon name="sidebar" />
-                </Menu.Item>
-                <Menu.Item position="right">
-                  <Button
-                    as="a"
+            <Sidebar.Pusher dimmed={sidebarOpened}>
+              <Segment style={{ padding: "0em" }}>
+                <Visibility
+                  once={false}
+                  onBottomPassed={this.showFixedMenu}
+                  onBottomPassedReverse={this.hideFixedMenu}
+                >
+                  <Menu
+                    fixed="top"
                     inverted
-                    primary
-                    onClick={this.handleOpenLogin}
+                    pointing={!fixed}
+                    secondary={!fixed}
                   >
-                    Log in
-                  </Button>
-                  <Button
-                    as="a"
-                    inverted
-                    primary
-                    style={{ marginLeft: "0.5em" }}
-                    onClick={this.handleOpenSignUp}
-                  >
-                    Sign Up
-                  </Button>
-                </Menu.Item>
-              </Menu>
-            </Container>
-          </Segment>
-          {/* </Sticky>*/}
+                    <Menu.Item onClick={this.handleToggle}>
+                      <Icon name="sidebar" />
+                    </Menu.Item>
+                    <Menu.Item position="right">
+                      <Button
+                        as="a"
+                        inverted
+                        primary={fixed}
+                        onClick={this.handleOpenLogin}
+                      >
+                        Log in
+                      </Button>
+                      <Button
+                        as="a"
+                        inverted
+                        primary={fixed}
+                        style={{ marginLeft: "0.5em" }}
+                        onClick={this.handleOpenSignUp}
+                      >
+                        Sign Up
+                      </Button>
+                    </Menu.Item>
+                  </Menu>
+                </Visibility>
+                <LandingPageHeading mobile />
+                <Dimmer
+                  active={activeLogin}
+                  onClickOutside={this.handleCloseLogin}
+                  page
+                >
+                  <LoginPage />
+                </Dimmer>
 
-          <LandingPageHeading mobile />
-
-          <Dimmer
-            active={activeLogin}
-            onClickOutside={this.handleCloseLogin}
-            page
-          >
-            <LoginPage />
-          </Dimmer>
-
-          <Dimmer
-            active={activeSignUp}
-            onClickOutside={this.handleCloseSignUp}
-            page
-          >
-            <SignUpPage />
-          </Dimmer>
-          {children}
-        </Sidebar.Pusher>
+                <Dimmer
+                  active={activeSignUp}
+                  onClickOutside={this.handleCloseSignUp}
+                  page
+                >
+                  <SignUpPage />
+                </Dimmer>
+                {children}
+              </Segment>
+            </Sidebar.Pusher>
+          </Sidebar.Pushable>
+        </div>
       </Responsive>
     );
   }
@@ -374,12 +414,40 @@ const LandingPage = () => (
         </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">
-            <Button size="huge">Check It Out</Button>
+            <Button primary animated size="huge">
+              <Button.Content visible>Check It Out</Button.Content>
+              <Button.Content hidden>
+                <Icon name="arrow right" />
+              </Button.Content>
+            </Button>
           </Grid.Column>
         </Grid.Row>
       </Grid>
     </Segment>
     <Segment style={{ padding: "0em" }} vertical>
+      <Grid>
+        <Grid.Row>
+          <Grid.Column textAlign="center">
+            <div
+              style={{
+                position: "relative",
+                background: "url(" + book + ") no-repeat center center fixed",
+                "-webkit-background-size": "cover",
+                "-moz-background-size:": "cover",
+                backgroundSize: "cover",
+                textAlign: "center",
+                color: "#fff",
+                paddingTop: "0px",
+                minWidth: "100%",
+                minHeight: "600px"
+              }}
+              class="img-text-heading"
+            />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </Segment>
+    <Segment style={{ padding: "8em 0em" }} vertical>
       <Grid celled="internally" columns="equal" stackable>
         <Grid.Row textAlign="center">
           <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
@@ -399,9 +467,32 @@ const LandingPage = () => (
         </Grid.Row>
       </Grid>
     </Segment>
+    <Segment style={{ padding: "0em" }} vertical>
+      <Grid>
+        <Grid.Row>
+          <Grid.Column textAlign="center">
+            <div
+              style={{
+                position: "relative",
+                background: "url(" + book2 + ") no-repeat center center fixed",
+                "-webkit-background-size": "cover",
+                "-moz-background-size:": "cover",
+                backgroundSize: "cover",
+                textAlign: "center",
+                color: "#fff",
+                paddingTop: "0px",
+                minWidth: "100%",
+                minHeight: "600px"
+              }}
+              class="img-text-heading"
+            />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </Segment>
     <Segment style={{ padding: "8em 0em" }} vertical>
       <Container text>
-        <Header as="h3" style={{ fontSize: "2em" }}>
+        <Header as="h3" style={{ fontSize: "2em", textAlign: "center" }}>
           How it works
         </Header>
         <p style={{ fontSize: "1.33em" }}>
@@ -409,9 +500,14 @@ const LandingPage = () => (
           digital book on the website and read it. You can also see informations
           of this book such as reviews, informations about author, etc.
         </p>
-        <Button as="a" size="large">
-          Read More
-        </Button>
+        <div style={{ textAlign: "center" }}>
+          <Button animated size="large">
+            <Button.Content visible>Read More</Button.Content>
+            <Button.Content hidden>
+              <Icon name="arrow right" />
+            </Button.Content>
+          </Button>
+        </div>
         <Divider
           as="h4"
           className="header"
@@ -420,10 +516,7 @@ const LandingPage = () => (
         >
           <a href="#">Did you know?</a>
         </Divider>
-        <Header as="h3" style={{ fontSize: "2em" }}>
-          Did you know?
-        </Header>
-        <p style={{ fontSize: "1.33em" }}>
+        <p style={{ fontSize: "1.33em", textAlign: "center" }}>
           More people in these days read digital books instead of physical ones.
         </p>
       </Container>
