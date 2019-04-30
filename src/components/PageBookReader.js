@@ -1,8 +1,8 @@
 import React from "react";
-import "./PageBookReader.css"
 import {Button} from "semantic-ui-react";
 import parse from "html-react-parser";
 import BookStylesheetManager from "./BookStylesheetManager";
+import PageComponent from "./PageComponent";
 
 const pageHeight = 800;
 
@@ -13,7 +13,8 @@ class PageBookReader extends React.Component {
         this.chapterDivRef = React.createRef();
         this.state = {
             currentPage: 1,
-            currentChapter: 0
+            currentChapter: 0,
+            pages:[]
         }
     }
 
@@ -28,69 +29,15 @@ class PageBookReader extends React.Component {
                 <Button onClick={this.previousPage}>previous page</Button>
                 <Button onClick={this.nextPage}>next page</Button>
             </div>
-            <div className={"row centered"}>
-                <div
-                    className="sixteen wide mobile eight wide tablet four wide computer column text container PageBookReaderWrapper">
-                    <div className={"PageBookReader"} ref={this.chapterDivRef}>{chapter}</div>
-                </div>
-            </div>
+            <PageComponent paginate={this.paginateChapter} ref={this.chapterDivRef} chapter={chapter}/>
         </div>
     }
 
-    componentDidMount() {
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log(this.state.pages)
+        console.log(this.state.currentPage)
         this.hideExceptPage(this.state.currentPage)
     }
-
-    componentDidUpdate() {
-        this.hideExceptPage(this.state.currentPage)
-    }
-
-    getLeafNodes() {
-        const root = this.chapterDivRef.current;
-        let nodes = Array.prototype.slice.call(root.getElementsByTagName("*"), 0);
-        return nodes.filter(function (node) {
-            if (['H1','H2','H3','H4','H5','H6', 'P'].includes(node.nodeName))
-                return true
-            return false
-        });
-    }
-
-    hideExceptPage(page) {
-        let currentPage = 0;
-        let leafNodes = this.getLeafNodes();
-        const foo = (firstVisibleNodeIndex) => {
-            let lastNodeIndex = Infinity;
-            for (let i = 0; i < leafNodes.length; i++) {
-                let leafNode = leafNodes[i];
-                leafNode.style.display = "";
-                if (i < firstVisibleNodeIndex || i > lastNodeIndex) {
-                    leafNode.style.display = "none"
-                } else if (!this.isElementInViewport(leafNode)) {
-                    leafNode.style.display = "none"
-                    lastNodeIndex = i - 1
-                }
-            }
-            return lastNodeIndex
-        };
-        let firstNodeIndex;
-        let lastNodeIndex = -1;
-        do {
-            firstNodeIndex = lastNodeIndex + 1;
-            lastNodeIndex = foo(firstNodeIndex);
-            currentPage++
-        }
-        while (currentPage != page);
-        this.lastPage = firstNodeIndex > leafNodes.length || lastNodeIndex > leafNodes.length;
-
-    }
-
-    isElementInViewport = (element) => {
-        const rect = element.getBoundingClientRect();
-        const parentRect = this.chapterDivRef.current.getBoundingClientRect();
-        return (
-            rect.top >= parentRect.top && rect.bottom <= parentRect.bottom
-        );
-    };
 
     previousPage = () => {
         if (this.state.currentPage > 1) {
@@ -103,7 +50,7 @@ class PageBookReader extends React.Component {
     };
 
     nextPage = () => {
-        if (!this.lastPage)
+        if (this.state.currentPage == this.state.pages.length+1)
             this.setState({
                 currentPage: this.state.currentPage + 1,
             });
@@ -125,6 +72,69 @@ class PageBookReader extends React.Component {
             currentPage: 1
         });
     };
+
+    getLeafNodes = () => {
+        if(this.chapterDivRef.current)
+        {
+            const root = this.chapterDivRef.current;
+            let nodes = Array.prototype.slice.call(root.getElementsByTagName("*"), 0);
+            let leafNodes = nodes.filter(function (node) {
+                if (['H1','H2','H3','H4','H5','H6', 'P', 'BLOCKQUOTE'].includes(node.nodeName))
+                    return true
+                return false
+            });
+            return leafNodes
+        }
+    }
+
+    isElementInViewport = (element) => {
+        const rect = element.getBoundingClientRect();
+        const parentRect = this.chapterDivRef.current.getBoundingClientRect();
+        return (
+            rect.top >= parentRect.top && rect.bottom <= parentRect.bottom
+        );
+    };
+
+    hideExceptFit = (leafNodes, firstVisibleNodeIndex) => {
+        let lastNodeIndex = Infinity;
+        for (let i = 0; i < leafNodes.length; i++) {
+            let leafNode = leafNodes[i];
+            leafNode.style.display = "";
+            if (i < firstVisibleNodeIndex || i > lastNodeIndex) {
+                leafNode.style.display = "none"
+            } else if (!this.isElementInViewport(leafNode)) {
+                leafNode.style.display = "none";
+                lastNodeIndex = i - 1
+            }
+        }
+        return lastNodeIndex
+    };
+
+    paginateChapter = () => {
+        let leafNodes = this.getLeafNodes();
+        if(leafNodes)
+        {
+            let firstNodeIndex;
+            let lastNodeIndex = -1;
+            let pages = [];
+            let lastPage;
+            do {
+                firstNodeIndex = lastNodeIndex + 1;
+                lastNodeIndex = this.hideExceptFit(leafNodes, firstNodeIndex);
+                pages.push(firstNodeIndex);
+                lastPage = firstNodeIndex > leafNodes.length || lastNodeIndex > leafNodes.length;
+            }
+            while (!lastPage);
+            this.setState({
+                pages: pages
+            });
+        }
+    }
+
+    hideExceptPage(i)
+    {
+        this.hideExceptFit(this.getLeafNodes(),this.state.pages[i-1])
+    }
 }
 
 export default PageBookReader;

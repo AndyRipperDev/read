@@ -15,7 +15,10 @@ class BookReaderWrapperComponent  extends React.Component {
 
     render() {
         if(this.props.books[0])
+        {
+            console.log(this.props.books[0]);
             return <PageBookReader book={this.props.books[0]}></PageBookReader>
+        }
         else
             return <div></div>
     }

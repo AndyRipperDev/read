@@ -7,7 +7,10 @@ import BookUploadComponent from "./components/BookUploadComponent";
 import './App.css';
 import BookReaderWrapperComponent from "./components/BookReaderWrapperComponent";
 
-const store = createStore(bookReducer);
+const store = createStore(
+    bookReducer, /* preloadedState, */
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
 class App extends React.Component{
 
