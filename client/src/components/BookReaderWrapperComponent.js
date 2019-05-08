@@ -1,7 +1,6 @@
 import React from "react";
 import PageBookReader from "./PageBookReader";
 import {connect} from "react-redux";
-import {Button} from "semantic-ui-react";
 
 
 const mapStateToProps = state => {

@@ -20,7 +20,7 @@ class PageBookReader extends React.Component {
 
     render() {
         let stylesheets = this.props.book.stylesheets;
-        let chapter = parse(this.props.book.getChapter(this.state.currentChapter).bodyHtml);
+        let chapter = parse(this.props.book.chapters[this.state.currentChapter]);
         return <div className="ui grid">
             <BookStylesheetManager stylesheets={stylesheets}/>
             <div className={"row centered"}>

@@ -1,13 +1,12 @@
 import React from "react";
 import {Button, Label, Message} from "semantic-ui-react";
 import {connect} from "react-redux";
-import {addBooks} from "../redux/actionCreators";
-import book from "../book";
-import chapter from "../chapter";
+import {addBooks, postBooks} from "../redux/actionCreators";
 import {Redirect} from "react-router-dom";
 
 const mapDispatchToProps = dispatch => ({
-    addBooks: (books) => dispatch(addBooks(books))
+    addBooks: (books) => dispatch(addBooks(books)),
+    postBooks: (books) => dispatch(postBooks(books))
 });
 
 
@@ -20,17 +19,41 @@ class BookUploadComponent extends React.Component {
 
     handleFormChange = (event) => {
         let files = event.target.files;
-        let addBooksCallback = this.props.addBooks;
-        let books = []
-        let bookCount = files.length
+        let books = [];
+        let bookCount = files.length;
         const JSZip = require("jszip");
-        let onFilesHandled = () =>
+        const fixXMLForRender = (chapters, images) =>{
+            let result = [];
+            for (let chapter of chapters) {
+                let chapterDOM = new DOMParser().parseFromString(chapter, "text/xml").getElementsByTagName("html")[0].getElementsByTagName("body")[0]
+                    let imageNodes = chapterDOM.querySelectorAll("image, img");
+                    for (let imageNode of imageNodes) {
+                        if (imageNode.getAttribute("src")) {
+                            const filename = imageNode.src.replace(/^.*[\\\/]/, '');
+                            let image = images[filename];
+                            imageNode.src = "data:image/" + image.extension + ";base64," + image.image;
+                        } else if (imageNode.getAttribute("xlink:href")) {
+                            const filename = imageNode.getAttribute("xlink:href").replace(/^.*[\\\/]/, '');
+                            let image = images[filename];
+                            imageNode.setAttribute("xlink:href", "data:image/" + image.extension + ";base64," + image.image);
+                        }
+                }
+                result.push( chapterDOM.outerHTML.replace(/body/g,"div"))
+            }
+            return result
+        }
+        const redirect = ()=>
         {
-            this.setState({ redirect: true });
-            addBooksCallback(books);
-        };
-        for(let f of files)
+            this.setState({redirect: true});
+        }
+
+        const onBooksRead = () =>
         {
+            this.props.postBooks(books)
+            redirect()
+        }
+
+        for (let f of files) {
             JSZip.loadAsync(f)
                 .then(function (zip) {
                     zip.forEach((relativePath, zipEntry) => {
@@ -39,42 +62,47 @@ class BookUploadComponent extends React.Component {
                             zipEntry.async("text").then((text) => {
 
                                 let contentFileParser = new DOMParser().parseFromString(text, "text/xml");
-                                let filePromises = []
-                                let chapters = []
-                                let images = {}
-                                let stylesheets = []
-                                let spineIdrefs = []
-                                for (let spineElement of contentFileParser.getElementsByTagName("spine")[0].children)
-                                {
+                                let filePromises = [];
+                                let chapters = [];
+                                let images = {};
+                                let stylesheets = [];
+                                let spineIdrefs = [];
+                                for (let spineElement of contentFileParser.getElementsByTagName("spine")[0].children) {
                                     spineIdrefs.push(spineElement.getAttribute("idref"))
                                 }
                                 for (let manifestElement of contentFileParser.getElementsByTagName("manifest")[0].children) {
-                                    let filePath = manifestElement.getAttribute("href")
+                                    let filePath = manifestElement.getAttribute("href");
                                     let fileName = filePath.replace(/^.*[\\\/]/, '');
                                     let extension = filePath.replace(/^.*[\\\/]/, '');
-                                    switch(manifestElement.getAttribute("media-type"))
-                                    {
+                                    switch (manifestElement.getAttribute("media-type")) {
                                         case 'image/jpeg':
-                                            filePromises.push(zip.file(filePath).async("base64").then((val)=>{images[fileName] = {"image": val, "extension": extension}}))
-                                            break
+                                            filePromises.push(zip.file(filePath).async("base64").then((val) => {
+                                                images[fileName] = {"image": val, "extension": extension}
+                                            }));
+                                            break;
                                         case 'application/xhtml+xml':
-                                            let id = manifestElement.getAttribute("id")
+                                            let id = manifestElement.getAttribute("id");
                                             let chapterIndex = spineIdrefs.indexOf(id);
-                                            filePromises.push(zip.file(filePath).async("text").then((val)=>{chapters[chapterIndex]=new chapter(val)}))
-                                            break
+                                            filePromises.push(zip.file(filePath).async("text").then((val) => {
+                                                chapters[chapterIndex] = val;
+                                            }));
+                                            break;
                                         case 'text/css':
-                                            filePromises.push(zip.file(filePath).async("text").then((val)=>{stylesheets.push(val)}))
+                                            filePromises.push(zip.file(filePath).async("text").then((val) => {
+                                                stylesheets.push(val)
+                                            }));
                                             break
 
                                     }
                                 }
-                                Promise.all(filePromises).then(()=>{
-                                    console.log(stylesheets)
-                                    books.push(new book(chapters,images,stylesheets))
+
+                                Promise.all(filePromises).then( ()=>
+                                {
+                                    chapters = fixXMLForRender(chapters,images)
+                                    books.push({"chapters": chapters, "images": images, "stylesheets": stylesheets});
                                     bookCount--;
-                                    if(bookCount==0)
-                                    {
-                                        onFilesHandled()
+                                    if (bookCount == 0) {
+                                        onBooksRead()
                                     }
                                 })
 
@@ -85,7 +113,6 @@ class BookUploadComponent extends React.Component {
                 })
         }
     };
-
 
     render() {
         if (this.state.redirect) {
@@ -100,8 +127,7 @@ class BookUploadComponent extends React.Component {
                     }}
                 />
             );
-        }
-        else if (window.File && window.FileReader && window.FileList && window.Blob) {
+        } else if (window.File && window.FileReader && window.FileList && window.Blob) {
             return (
                 <Label
                     as="label"
