@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "db": "start mongod --bind_ip 127.0.01 --dbpath=\"./data\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
