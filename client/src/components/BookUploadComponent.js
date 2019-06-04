@@ -64,20 +64,20 @@ class BookUploadComponent extends React.Component {
                                 let contentFileParser = new DOMParser().parseFromString(text, "text/xml");
                                 let filePromises = [];
                                 let chapters = [];
-                                let images = {};
+                                let images = [];
                                 let stylesheets = [];
                                 let spineIdrefs = [];
+                                let name = contentFileParser.getElementsByTagName("dc:title")[0].innerHTML
                                 for (let spineElement of contentFileParser.getElementsByTagName("spine")[0].children) {
                                     spineIdrefs.push(spineElement.getAttribute("idref"))
                                 }
                                 for (let manifestElement of contentFileParser.getElementsByTagName("manifest")[0].children) {
                                     let filePath = manifestElement.getAttribute("href");
                                     let fileName = filePath.replace(/^.*[\\\/]/, '');
-                                    let extension = filePath.replace(/^.*[\\\/]/, '');
                                     switch (manifestElement.getAttribute("media-type")) {
                                         case 'image/jpeg':
                                             filePromises.push(zip.file(filePath).async("base64").then((val) => {
-                                                images[fileName] = {"image": val, "extension": extension}
+                                                images[fileName] = {"image": val}
                                             }));
                                             break;
                                         case 'application/xhtml+xml':
@@ -99,7 +99,7 @@ class BookUploadComponent extends React.Component {
                                 Promise.all(filePromises).then( ()=>
                                 {
                                     chapters = fixXMLForRender(chapters,images)
-                                    books.push({"chapters": chapters, "images": images, "stylesheets": stylesheets});
+                                    books.push({"name":name, "chapters": chapters, "stylesheets": stylesheets});
                                     bookCount--;
                                     if (bookCount == 0) {
                                         onBooksRead()

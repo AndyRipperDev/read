@@ -19,7 +19,7 @@ import {
   Sidebar,
   Dimmer,
   Visibility,
-  Transition
+  Transition, Label
 } from "semantic-ui-react";
 
 const getWidth = () => {
@@ -41,7 +41,7 @@ const LandingPageHeading = ({ mobile }) => (
       paddingTop: "110px",
       minHeight: mobile ? "500px" : "950px"
     }}
-    class="img-text-heading"
+    className="img-text-heading"
   >
     <Header
       as="h1"
@@ -159,6 +159,7 @@ class DesktopContainer extends Component {
                   >
                     About
                   </Menu.Item>
+                  {!sessionStorage.getItem('loggedin')?
                   <Menu.Item position="right">
                     <Button
                       as="a"
@@ -177,7 +178,13 @@ class DesktopContainer extends Component {
                     >
                       Sign Up
                     </Button>
-                  </Menu.Item>
+                  </Menu.Item>:
+                  <Menu.Item position="right">
+                  <Label size={'big'} as='a' image>
+                    <img src='https://react.semantic-ui.com/images/avatar/large/matthew.png' />
+                    Joe
+                  </Label>
+                  </Menu.Item>}
                 </Container>
               </Menu>
             )}
@@ -198,7 +205,7 @@ class DesktopContainer extends Component {
           onClickOutside={this.handleCloseSignUp}
           page
         >
-          <SignUpPage />
+          <SignUpPage onSignUp={this.handleCloseSignUp}/>
         </Dimmer>
         {children}
       </Responsive>
@@ -441,7 +448,7 @@ const LandingPage = () => (
                 minWidth: "100%",
                 minHeight: "600px"
               }}
-              class="img-text-heading"
+              className="img-text-heading"
             />
           </Grid.Column>
         </Grid.Row>
@@ -484,7 +491,7 @@ const LandingPage = () => (
                 minWidth: "100%",
                 minHeight: "600px"
               }}
-              class="img-text-heading"
+              className="img-text-heading"
             />
           </Grid.Column>
         </Grid.Row>
@@ -517,7 +524,7 @@ const LandingPage = () => (
           <a href="#">Did you know?</a>
         </Divider>
         <p style={{ fontSize: "1.33em", textAlign: "center" }}>
-          More people in these days read digital books instead of physical ones.
+          Ondra je gej.
         </p>
       </Container>
     </Segment>
