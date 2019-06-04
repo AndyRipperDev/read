@@ -9,6 +9,8 @@ import LandingPage from "./components/LandingPage";
 import BookUploadComponent from "./components/BookUploadComponent";
 import BookReaderWrapperComponent from "./components/BookReaderWrapperComponent";
 import LibraryComponent from "./components/LibraryComponent";
+import ProgressBarComponent from "./components/ProgressBarComponent";
+import ReaderMenuComponent from "./components/ReaderMenuComponent";
 
 const store = createStore(
   bookReducer /* preloadedState, */,
@@ -24,6 +26,8 @@ class App extends React.Component {
           <Route path="/upload" component={BookUploadComponent} />
           <Route path="/reader" component={BookReaderWrapperComponent} />
           <Route path="/library" component={LibraryComponent} />
+          <Route path="/progress" component={ProgressBarComponent} />
+          <Route path="/menu" component={ReaderMenuComponent} />
         </Router>
       </Provider>
     );
