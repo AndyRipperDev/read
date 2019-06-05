@@ -1,4 +1,12 @@
-import {ADD_BOOKS, ADD_USER} from "./actionTypes";
+import {
+    ADD_BOOKS,
+    ADD_USER,
+    LOGIN_FAILURE,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    LOGOUT_REQUEST,
+    LOGOUT_SUCCESS
+} from "./actionTypes";
 import {baseUrl} from "../config";
 
 export const addBooks = (books) => ({
@@ -34,18 +42,41 @@ export const postBooks = (books) => {
     }
 }
 
-export const postUser = (user) => {
-    return function (dispatch) {
-        return fetch(baseUrl + 'auth/signup', {
-            method: "POST",
-            body: JSON.stringify(user),
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "same-origin"
-        }).then(response => {
+export const requestLogin = (creds) => {
+    return {
+        type: LOGIN_REQUEST,
+        creds
+    }
+}
+
+export const receiveLogin = (response) => {
+    return {
+        type: LOGIN_SUCCESS,
+        token: response.token
+    }
+}
+
+export const loginError = (message) => {
+    return {
+        type: LOGIN_FAILURE,
+        message
+    }
+}
+
+export const loginUser = (creds) => (dispatch) => {
+    // We dispatch requestLogin to kickoff the call to the API
+    console.log(baseUrl + 'users/login')
+    dispatch(requestLogin(creds))
+    return fetch(baseUrl + 'users/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(creds)
+    })
+        .then(response => {
+            console.log(response)
                 if (response.ok) {
-                    sessionStorage.setItem('loggedin', true);
                     return response;
                 } else {
                     var error = new Error('Error ' + response.status + ': ' + response.statusText);
@@ -56,31 +87,40 @@ export const postUser = (user) => {
             error => {
                 throw error;
             })
-            .catch(error =>  { console.log('post user', error.message); alert('User could not be posted\nError: '+error.message); });
+        .then(response => response.json())
+        .then(response => {
+            if (response.success) {
+                // If login was successful, set the token in local storage
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('creds', JSON.stringify(creds));
+                // Dispatch the success action
+                dispatch(receiveLogin(response));
+            }
+            else {
+                var error = new Error('Error ' + response.status);
+                error.response = response;
+                throw error;
+            }
+        })
+        .catch(error => dispatch(loginError(error.message)))
+};
+
+export const requestLogout = () => {
+    return {
+        type: LOGOUT_REQUEST
     }
 }
 
-
-export const postLogin = (user) => {
-    return function (dispatch) {
-        fetch(baseUrl + 'login', {
-            method: 'POST',
-            body: JSON.stringify(this.state),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    this.props.history.push('/');
-                } else {
-                    const error = new Error(res.error);
-                    throw error;
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Error logging in please try again');
-            });
+export const receiveLogout = () => {
+    return {
+        type: LOGOUT_SUCCESS
     }
+}
+
+// Logs the user out
+export const logoutUser = () => (dispatch) => {
+    dispatch(requestLogout())
+    localStorage.removeItem('token');
+    localStorage.removeItem('creds');
+    dispatch(receiveLogout())
 }

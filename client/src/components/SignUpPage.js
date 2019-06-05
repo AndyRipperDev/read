@@ -2,12 +2,8 @@ import React, {Component} from 'react'
 import {Grid, Header} from 'semantic-ui-react'
 import {ErrorMessage, Field, Formik} from 'formik';
 import * as Yup from 'yup';
-import {postUser} from "../redux/actionCreators";
 import {connect} from "react-redux";
 
-const mapDispatchToProps = dispatch => ({
-    postUser: (user) => dispatch(postUser(user))
-});
 
 class SignUpPage extends Component {
     state = {};
@@ -25,7 +21,9 @@ class SignUpPage extends Component {
                         let salt = bcrypt.genSaltSync(10)
                         let hash = bcrypt.hashSync("B4c0/\/", salt)
                         values['password'] = hash
-                        this.props.postUser(values)
+                        console.log('tramvaj')
+
+                        //this.props.postUser(values)
                         this.props.onSignUp()
                     }}
                 >
@@ -41,7 +39,7 @@ class SignUpPage extends Component {
                                     <ErrorMessage name="email" component="div"/>
                                 </div>
                                 <div className="field">
-                                    <Field type="password" name="password"/>
+                                    <Field type="password" name="password" placeholder={'Password'}/>
                                     <ErrorMessage name="password" component="div"/>
                                 </div>
                                 <button type="submit" disabled={isSubmitting}>
@@ -56,4 +54,4 @@ class SignUpPage extends Component {
     }
 }
 
-export default connect(null, mapDispatchToProps)(SignUpPage)
+export default SignUpPage

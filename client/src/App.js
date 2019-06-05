@@ -1,7 +1,8 @@
 import React from "react";
 import "./semantic/dist/semantic.min.css";
-import {applyMiddleware, compose, createStore} from "redux";
+import {applyMiddleware, combineReducers, compose, createStore} from "redux";
 import bookReducer from "./redux/reducers/bookReducer";
+import authReducer from './redux/reducers/authReducer'
 import {Provider} from "react-redux";
 import {BrowserRouter as Router, Route} from "react-router-dom";
 import "./App.css";
@@ -12,7 +13,7 @@ import LibraryComponent from "./components/LibraryComponent";
 import thunk from "redux-thunk";
 
 const store = createStore(
-    bookReducer, /* preloadedState, */
+    combineReducers({'bookReducer':bookReducer,'authReducer':authReducer}), /* preloadedState, */
     compose(
         applyMiddleware(thunk),
         window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
