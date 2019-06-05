@@ -5,7 +5,8 @@ var userSchema = new mongoose.Schema({
     admin:   {
         type: Boolean,
         default: false
-    }
+    },
+    booksOwned: []
 });
 userSchema.plugin(passportLocalMongoose);
 

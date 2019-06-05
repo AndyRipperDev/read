@@ -1,4 +1,4 @@
-import {ADD_BOOKS} from "../actionTypes";
+import {ADD_BOOKS, RECEIVE_MY_BOOK_PREVIEWS} from "../actionTypes";
 
 const initialState = {
     books:  [],
@@ -6,12 +6,17 @@ const initialState = {
 };
 
 function bookReducer(state = initialState, action) {
+    console.log(action)
     switch (action.type) {
         case ADD_BOOKS:
             return Object.assign({}, state, {
                 ...state,
-                books: state.books.concat(action.payload)
+                books: action.payload
             });
+        case RECEIVE_MY_BOOK_PREVIEWS:
+            return {...state,
+                bookPreviews: action.payload
+            };
         default:
             return state
     }

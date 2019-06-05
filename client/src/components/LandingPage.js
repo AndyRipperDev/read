@@ -268,8 +268,8 @@ const LandingPage = () => (
               style={{
                 position: "relative",
                 background: "url(" + book + ") no-repeat center center fixed",
-                "-webkit-background-size": "cover",
-                "-moz-background-size:": "cover",
+                "WebkitBackgroundSize": "cover",
+                "MozBackgroundSize:": "cover",
                 backgroundSize: "cover",
                 textAlign: "center",
                 color: "#fff",
@@ -311,8 +311,8 @@ const LandingPage = () => (
               style={{
                 position: "relative",
                 background: "url(" + book2 + ") no-repeat center center fixed",
-                "-webkit-background-size": "cover",
-                "-moz-background-size:": "cover",
+                "WebkitBackgroundSize:": "cover",
+                "MozBackgroundSize:": "cover",
                 backgroundSize: "cover",
                 textAlign: "center",
                 color: "#fff",
@@ -353,7 +353,7 @@ const LandingPage = () => (
           <a href="#">Did you know?</a>
         </Divider>
         <p style={{ fontSize: "1.33em", textAlign: "center" }}>
-          Ondra je gej.
+          Ondra je gej a jeho rodice o tom nevi.
         </p>
       </Container>
     </Segment>

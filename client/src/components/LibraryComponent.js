@@ -10,15 +10,26 @@ import {
   Button,
   Icon
 } from "semantic-ui-react";
+import {fetchMyBookPreviews} from "../redux/bookActionCreators";
 
 const mapStateToProps = state => {
   return {
-    bookPreviews: state.bookPreviews
+    bookPreviews: state.bookReducer.bookPreviews
   };
 };
 
-class BookReaderWrapperComponent extends React.Component {
+
+
+const mapDispatchToProps = dispatch => ({
+  fetchMyBookPreviews: (user) => dispatch(fetchMyBookPreviews(user))
+});
+
+class LibraryComponent extends React.Component {
   state = {};
+
+  componentDidMount() {
+    this.props.fetchMyBookPreviews()
+  }
 
   handleShow = () => this.setState({ active: true });
   handleHide = () => this.setState({ active: false });
@@ -53,7 +64,7 @@ class BookReaderWrapperComponent extends React.Component {
               onMouseEnter={this.handleShow}
               onMouseLeave={this.handleHide}
               // size="medium"
-              src="https://react.semantic-ui.com/images/avatar/large/matthew.png"
+              src={"data:image/" + bookPreview.coverExtension + ";base64," + bookPreview.coverData}
             >
               {/*</Dimmer.Dimmable>/<Image src="https://react.semantic-ui.com/images/avatar/large/matthew.png" />*/}
             </Dimmer.Dimmable>
@@ -76,4 +87,4 @@ class BookReaderWrapperComponent extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(BookReaderWrapperComponent);
+export default connect(mapStateToProps,mapDispatchToProps)(LibraryComponent);
