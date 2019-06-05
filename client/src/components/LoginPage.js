@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Grid, Header} from 'semantic-ui-react'
 import {ErrorMessage, Field, Formik} from 'formik';
 import {connect} from "react-redux";
-import {loginUser} from "../redux/actionCreators";
+import {loginUser} from "../redux/authActionCreators";
 
 const mapDispatchToProps = dispatch => ({
     loginUser: (user) => dispatch(loginUser(user))
@@ -21,7 +21,6 @@ class LoginPage extends Component {
     state = {};
 
     render() {
-        console.log(this.props)
         if(this.props.isAuthenticated)
         {
             this.props.onLogin()
@@ -32,16 +31,13 @@ class LoginPage extends Component {
             return <Grid textAlign='center' style={{height: '100%'}} verticalAlign='middle'>
                 <Grid.Column style={{minWidth: 388, Width: 450}}>
                     <Header as='h2' color='blue' textAlign='center'>
-                        Sign Up to Readify
+                        Login to Readify
                     </Header>
                     <Formik
                         initialValues={{password: '',username:''}}
                         onSubmit={(values, {setSubmitting}) => {
-                            var hash = require('hash.js')
-                            hash = hash.sha256().update(values['password']).digest('hex')
-                            let user = {"username":values['username'], "password":hash}
+                            let user = {"username":values['username'], "password":values['password']}
                             this.props.loginUser(user)
-                            //this.props.postUser(values)
                         }}
                     >
                         {props => {
@@ -59,8 +55,8 @@ class LoginPage extends Component {
                                         <Field type="password" name="password" placeholder={'Password'}/>
                                         <ErrorMessage name="password" component="div"/>
                                     </div>
-                                    <button type="submit" className={this.props.isLoading ? 'ui loading button' : 'ui button'}>
-                                        Submit
+                                    <button type="submit" className={"ui button " + (this.props.isLoading ? 'loading ' : ' ' + (this.props.errMess ? 'red ' : ' '))}>
+                                        {!this.props.errMess?'Submit':this.props.errMess}
                                     </button>
                                 </form>
                             );

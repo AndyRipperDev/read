@@ -16,8 +16,8 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import LandingPageHeading from "./LandingPageHeading";
-import {loginUser} from "../redux/actionCreators";
-import {logoutUser} from "../redux/actionCreators";
+import {loginClearErrors, loginUser} from "../redux/authActionCreators";
+import {logoutUser} from "../redux/authActionCreators";
 const mapStateToProps = state => {
     return {
         isAuthenticated: state.authReducer.isAuthenticated,
@@ -27,7 +27,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-    loginUser: (user) => dispatch(logoutUser(user))
+    loginUser: (user) => dispatch(logoutUser(user)),
+    loginClearErrors: () => dispatch(loginClearErrors())
 });
 
 const getWidth = () => {
@@ -55,10 +56,10 @@ class DesktopContainer extends Component {
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
-    handleOpenLogin = () => this.setState({ activeLogin: true });
+    handleOpenLogin = () => {this.props.loginClearErrors(); this.setState({ activeLogin: true })};
     handleCloseLogin = () => this.setState({ activeLogin: false });
 
-    handleOpenSignUp = () => this.setState({ activeSignUp: true });
+    handleOpenSignUp = () => {this.props.loginClearErrors(); this.setState({ activeSignUp: true })};
     handleOpenProfileMenu = () => this.setState({activeProfileMenu: true})
     handleCloseProfileMenu = () => this.setState({activeProfileMenu: false})
     handleCloseSignUp = () => this.setState({ activeSignUp: false });
@@ -73,7 +74,6 @@ class DesktopContainer extends Component {
         const { activeSignUp } = this.state;
         const { fixed } = this.state;
         const { visible } = this.state;
-        console.log("ahoj",this.props)
         return (
             <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
                 <Visibility

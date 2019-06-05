@@ -24,7 +24,7 @@ class PageBookReader extends React.Component {
         return <div className="ui grid">
             <BookStylesheetManager stylesheets={stylesheets}/>
             <div className={"row centered"}>
-                <Button style={{backgroundColor: "#ff00ff"}} onClick={this.previousChapter}>previous chapter</Button>
+                <Button onClick={this.previousChapter}>previous chapter</Button>
                 <Button onClick={this.nextChapter}>next chapter</Button>
                 <Button onClick={this.previousPage}>previous page</Button>
                 <Button onClick={this.nextPage}>next page</Button>

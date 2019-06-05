@@ -1,11 +1,5 @@
 import React from "react";
 
-const mapStateToProps = state => {
-    return {
-        books: state.books,
-    }
-};
-
 class BookStylesheetManager extends React.Component {
     constructor(props) {
         super(props);

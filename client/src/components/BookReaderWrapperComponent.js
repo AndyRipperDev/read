@@ -1,13 +1,18 @@
 import React from "react";
 import PageBookReader from "./PageBookReader";
 import {connect} from "react-redux";
+import {loginUser} from "../redux/authActionCreators";
 
 
 const mapStateToProps = state => {
   return {
-    books: state.books
+    books: state.bookReducer.books
   };
 };
+
+const mapDispatchToProps = dispatch => ({
+    loginUser: (user) => dispatch(loginUser(user))
+});
 
 class BookReaderWrapperComponent  extends React.Component {
 

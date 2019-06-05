@@ -11,6 +11,7 @@ const initialState = {
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case ActionTypes.LOGIN_REQUEST:
+        case ActionTypes.SIGNUP_REQUEST:
             return {...state,
                 isLoading: true,
                 isAuthenticated: false,
@@ -24,6 +25,7 @@ const authReducer = (state = initialState, action) => {
                 token: action.token
             };
         case ActionTypes.LOGIN_FAILURE:
+        case ActionTypes.SIGNUP_FAILURE:
             return {...state,
                 isLoading: false,
                 isAuthenticated: false,
@@ -41,6 +43,9 @@ const authReducer = (state = initialState, action) => {
                 token: '',
                 user: null
             };
+        case ActionTypes.CLEAR_LOGIN_ERRORS:
+            return {...state,
+            errMess: ''}
         default:
             return state
     }

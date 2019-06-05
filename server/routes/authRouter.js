@@ -40,9 +40,10 @@ UserRouter.post('/signup', (req, res, next) => {
                         return ;
                     }
                     passport.authenticate('local')(req, res, () => {
+                        var token = authenticate.getToken({_id: req.user._id});
                         res.statusCode = 200;
                         res.setHeader('Content-Type', 'application/json');
-                        res.json({success: true, status: 'Registration Successful!'});
+                        res.json({token: token, success: true, status: 'Registration Successful!'});
                     });
                 });
             }
@@ -51,7 +52,7 @@ UserRouter.post('/signup', (req, res, next) => {
 
 
 UserRouter.post('/login', passport.authenticate('local'), (req, res) => {
-    console.log('ahoj')
+
     var token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');

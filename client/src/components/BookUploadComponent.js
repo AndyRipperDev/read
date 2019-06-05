@@ -1,13 +1,19 @@
 import React from "react";
 import {Button, Label, Message} from "semantic-ui-react";
 import {connect} from "react-redux";
-import {addBooks, postBooks} from "../redux/actionCreators";
+import {addMyBooks, postMyBooks} from "../redux/bookActionCreators";
 import {Redirect} from "react-router-dom";
 
 const mapDispatchToProps = dispatch => ({
-    addBooks: (books) => dispatch(addBooks(books)),
-    postBooks: (books) => dispatch(postBooks(books))
+    addBooks: (books) => dispatch(addMyBooks(books)),
+    postBooks: (books) => dispatch(postMyBooks(books))
 });
+
+const mapStateToProps = state => {
+    return {
+        isAuthenticated: state.authReducer.isAuthenticated,
+    };
+};
 
 
 class BookUploadComponent extends React.Component {
@@ -49,7 +55,10 @@ class BookUploadComponent extends React.Component {
 
         const onBooksRead = () =>
         {
-            this.props.postBooks(books)
+            if(this.props.isAuthenticated)
+                this.props.postBooks(books)
+            else
+                this.props.addBooks(books)
             redirect()
         }
 
@@ -67,7 +76,9 @@ class BookUploadComponent extends React.Component {
                                 let images = [];
                                 let stylesheets = [];
                                 let spineIdrefs = [];
+                                let cover = null
                                 let name = contentFileParser.getElementsByTagName("dc:title")[0].innerHTML
+                                let author = contentFileParser.getElementsByTagName('dc:creator')[0].innerHTML
                                 for (let spineElement of contentFileParser.getElementsByTagName("spine")[0].children) {
                                     spineIdrefs.push(spineElement.getAttribute("idref"))
                                 }
@@ -98,8 +109,13 @@ class BookUploadComponent extends React.Component {
 
                                 Promise.all(filePromises).then( ()=>
                                 {
+                                    console.log(images)
+                                    let coverFileName = Object.keys(images).filter(x=>x.includes('cover'))[0]
+                                    let coverData = images[coverFileName]['image']
+                                    let coverExtension = coverFileName.split('.')[1]
                                     chapters = fixXMLForRender(chapters,images)
-                                    books.push({"name":name, "chapters": chapters, "stylesheets": stylesheets});
+                                    books.push({"author":author, "coverExtension":coverExtension,"coverData":coverData, "name":name, "chapters": chapters, "stylesheets": stylesheets});
+                                    console.log("books", books)
                                     bookCount--;
                                     if (bookCount == 0) {
                                         onBooksRead()
@@ -134,6 +150,7 @@ class BookUploadComponent extends React.Component {
                     basic
                     htmlFor="upload"
                 >
+
                     <Button
                         icon="upload"
                         label={{
@@ -161,4 +178,4 @@ class BookUploadComponent extends React.Component {
     }
 }
 
-export default connect(null, mapDispatchToProps)(BookUploadComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(BookUploadComponent)
