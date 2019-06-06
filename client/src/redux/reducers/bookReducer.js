@@ -2,7 +2,7 @@ import {ADD_BOOKS, RECEIVE_MY_BOOK_PREVIEWS} from "../actionTypes";
 
 const initialState = {
     books:  [],
-    bookPreviews: [{name:'Drug dealing 101',author:'Jaroslav Kozyk'}]
+    bookPreviews: []
 };
 
 function bookReducer(state = initialState, action) {

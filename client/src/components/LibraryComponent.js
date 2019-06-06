@@ -24,7 +24,6 @@ class BookCard extends React.Component {
 
     render() {
         const bookPreview = this.props.bookPreview
-        console.log(this.props)
         const {active} = this.state;
         const content = (
             <div>
@@ -43,7 +42,7 @@ class BookCard extends React.Component {
             </div>
         );
         return (
-            <Grid.Column key={bookPreview.id}>
+            <Grid.Column key={bookPreview._id}>
                 <Card>
                     <Dimmer.Dimmable
                         as={Image}
@@ -76,6 +75,7 @@ class LibraryComponent extends React.Component {
     }
 
     render() {
+        console.log(this.props.bookPreviews)
         const columns = this.props.bookPreviews.map((bookPreview) => <BookCard
     bookPreview={bookPreview}/>)
         return <Grid doubling columns={6}>
