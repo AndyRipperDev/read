@@ -130,7 +130,7 @@ class DesktopContainer extends Component {
                         inverted
                         animated
                       >
-                        <Button.Content visible>Log In</Button.Content>
+                        <Button.Content visible>Log in</Button.Content>
                         <Button.Content hidden>
                           <Icon name="sign-in" />
                         </Button.Content>
@@ -142,14 +142,17 @@ class DesktopContainer extends Component {
                         inverted
                         animated
                       >
-                        <Button.Content visible>Sign Up</Button.Content>
+                        <Button.Content visible>Sign up</Button.Content>
                         <Button.Content hidden>
                           <Icon name="user plus" />
                         </Button.Content>
                       </Button>
                     </Menu.Item>
                   ) : (
-                    <Menu.Item position="right">
+                    <Menu.Item
+                      position="right"
+                      style={{ paddingTop: "0.65em", paddingBottom: "0.6em" }}
+                    >
                       <Image
                         src="https://react.semantic-ui.com/images/avatar/large/matthew.png"
                         avatar

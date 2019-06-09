@@ -53,10 +53,18 @@ class MobileContainer extends Component {
     this.setState({ sidebarOpened: false });
   };
 
-  handleOpenLogin = () => this.setState({ activeLogin: true });
+  handleOpenLogin = () => {
+    this.props.loginClearErrors();
+    this.setState({ activeLogin: true });
+  };
   handleCloseLogin = () => this.setState({ activeLogin: false });
 
-  handleOpenSignUp = () => this.setState({ activeSignUp: true });
+  handleOpenSignUp = () => {
+    this.props.loginClearErrors();
+    this.setState({ activeSignUp: true });
+  };
+  handleOpenProfileMenu = () => this.setState({ activeProfileMenu: true });
+  handleCloseProfileMenu = () => this.setState({ activeProfileMenu: false });
   handleCloseSignUp = () => this.setState({ activeSignUp: false });
 
   render() {
@@ -74,7 +82,7 @@ class MobileContainer extends Component {
         maxWidth={Responsive.onlyMobile.maxWidth}
       >
         <div>
-          <Sidebar.Pushable as={Segment} style={{ transform: "none" }}>
+          <Sidebar.Pushable as={Segment} basic style={{ transform: "none" }}>
             <Sidebar
               as={Menu}
               animation="push"
@@ -122,39 +130,52 @@ class MobileContainer extends Component {
                 About
               </Menu.Item>
               {!this.props.isAuthenticated ? (
-                <Menu.Item position="right">
-                  <Button
+                <div>
+                  <Menu.Item
                     as="a"
-                    inverted
-                    primary={fixed}
+                    name="login"
+                    active={activeItem === "login"}
                     onClick={this.handleOpenLogin}
                   >
                     Log in
-                  </Button>
-                  <Button
+                  </Menu.Item>
+                  <Menu.Item
                     as="a"
-                    inverted
-                    primary={fixed}
-                    style={{ marginLeft: "0.5em" }}
+                    name="signup"
+                    active={activeItem === "signup"}
                     onClick={this.handleOpenSignUp}
                   >
                     Sign Up
-                  </Button>
-                </Menu.Item>
+                  </Menu.Item>
+                </div>
               ) : (
-                <Menu.Item position="right">
-                  <Button onClick={this.handleOpenSignUp}>
-                    <Label size={"big"} as="a" image>
-                      <img src="https://react.semantic-ui.com/images/avatar/large/matthew.png" />
+                <div>
+                  <Menu.Item
+                    as="a"
+                    name="signup"
+                    active={activeItem === "signup"}
+                    onClick={() => {
+                      this.props.loginUser();
+                      this.handleCloseProfileMenu();
+                    }}
+                  >
+                    Log out
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Image
+                      src="https://react.semantic-ui.com/images/avatar/large/matthew.png"
+                      avatar
+                    />
+                    <span style={{ paddingRight: "2em", paddingLeft: "0.5em" }}>
                       Joe
-                    </Label>
-                  </Button>
-                </Menu.Item>
+                    </span>
+                  </Menu.Item>
+                </div>
               )}
             </Sidebar>
 
             <Sidebar.Pusher dimmed={sidebarOpened}>
-              <Segment style={{ padding: "0em" }}>
+              <Segment basic style={{ padding: "0em" }}>
                 <Visibility
                   once={false}
                   onBottomPassed={this.showFixedMenu}
@@ -177,7 +198,7 @@ class MobileContainer extends Component {
                           inverted
                           animated
                         >
-                          <Button.Content visible>Log In</Button.Content>
+                          <Button.Content visible>Log in</Button.Content>
                           <Button.Content hidden>
                             <Icon name="sign-in" />
                           </Button.Content>
@@ -189,7 +210,7 @@ class MobileContainer extends Component {
                           inverted
                           animated
                         >
-                          <Button.Content visible>Sign Up</Button.Content>
+                          <Button.Content visible>Sign up</Button.Content>
                           <Button.Content hidden>
                             <Icon name="user plus" />
                           </Button.Content>

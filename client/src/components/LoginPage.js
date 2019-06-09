@@ -27,12 +27,12 @@ class LoginPage extends Component {
       return (
         <Grid
           textAlign="center"
-          style={{ height: "100%" }}
+          style={{ height: "100%", paddingLeft: "0em", paddingRight: "0em" }}
           verticalAlign="middle"
         >
-          <Grid.Column style={{ minWidth: 388, Width: 450 }}>
+          <Grid.Column width={16}>
             <Header as="h2" color="blue" textAlign="center">
-              Login to Readify
+              Log in to Readify
             </Header>
             <Formik
               initialValues={{ password: "", username: "" }}
@@ -48,33 +48,83 @@ class LoginPage extends Component {
                 const { isSubmitting, handleSubmit } = props;
                 return (
                   <form className={"ui form"} onSubmit={handleSubmit}>
-                    <div className="field">
-                      <Field
-                        type="text"
-                        name="username"
-                        placeholder={"Username"}
-                      />
-                      <ErrorMessage name="email" component="div" />
+                    <div className={"ui segment"}>
+                      <Grid>
+                        <Grid.Row style={{ paddingTop: "2em" }}>
+                          <Grid.Column
+                            width={2}
+                            style={{ paddingRight: "0em", paddingLeft: "0em" }}
+                          >
+                            <Icon
+                              name="user"
+                              color="black"
+                              style={{ paddingTop: "0.7em" }}
+                            />
+                          </Grid.Column>
+                          <Grid.Column
+                            width={13}
+                            style={{ paddingRight: "0em", paddingLeft: "0em" }}
+                          >
+                            <div className="field">
+                              <Field
+                                type="text"
+                                name="username"
+                                placeholder={"Username"}
+                              />
+
+                              <ErrorMessage name="email" component="div" />
+                            </div>
+                          </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                          <Grid.Column
+                            width={2}
+                            style={{ paddingRight: "0em", paddingLeft: "0em" }}
+                          >
+                            {" "}
+                            <Icon
+                              name="lock"
+                              color="black"
+                              style={{ paddingTop: "0.7em" }}
+                            />
+                          </Grid.Column>
+                          <Grid.Column
+                            width={13}
+                            style={{ paddingRight: "0em", paddingLeft: "0em" }}
+                          >
+                            <div className="field">
+                              <Field
+                                type="password"
+                                name="password"
+                                placeholder={"Password"}
+                              />
+                              <ErrorMessage name="password" component="div" />
+                            </div>
+                          </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                          <Grid.Column
+                            width={16}
+                            style={{ paddingRight: "0em", paddingLeft: "0em" }}
+                          >
+                            <button
+                              type="submit"
+                              className={
+                                "ui button " +
+                                (this.props.isLoading
+                                  ? "loading "
+                                  : " " +
+                                    (this.props.errMess ? "red " : " primary "))
+                              }
+                            >
+                              {!this.props.errMess
+                                ? "Log in"
+                                : this.props.errMess}
+                            </button>
+                          </Grid.Column>
+                        </Grid.Row>
+                      </Grid>
                     </div>
-                    <div className="field">
-                      <Field
-                        type="password"
-                        name="password"
-                        placeholder={"Password"}
-                      />
-                      <ErrorMessage name="password" component="div" />
-                    </div>
-                    <button
-                      type="submit"
-                      className={
-                        "ui button " +
-                        (this.props.isLoading
-                          ? "loading "
-                          : " " + (this.props.errMess ? "red " : " "))
-                      }
-                    >
-                      {!this.props.errMess ? "Submit" : this.props.errMess}
-                    </button>
                   </form>
                 );
               }}
