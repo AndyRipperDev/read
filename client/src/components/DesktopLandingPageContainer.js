@@ -17,6 +17,8 @@ import { connect } from "react-redux";
 import LandingPageHeading from "./LandingPageHeading";
 import { loginClearErrors, loginUser } from "../redux/authActionCreators";
 import { logoutUser } from "../redux/authActionCreators";
+import { withRouter } from "react-router-dom";
+
 const mapStateToProps = state => {
   return {
     isAuthenticated: state.authReducer.isAuthenticated,
@@ -37,9 +39,18 @@ const getWidth = () => {
 };
 
 class DesktopContainer extends Component {
+  constructor() {
+    super();
+    this.handleRedirectNav = this.handleRedirectNav.bind(this);
+  }
   state = {};
   state = { activeItem: "home" };
   state = { visible: true };
+
+  handleRedirectNav = (e, path) => {
+    e.preventDefault();
+    this.props.history.push("/" + path);
+  };
 
   handleVisibility = () => this.setState({ visible: !this.state.visible });
 
@@ -87,6 +98,7 @@ class DesktopContainer extends Component {
           onTopPassedReverse={this.handleVisibilityAndHideFixedMenu}
           onBottomPassed={this.handleVisibilityAndShowFixedMenu}
           onBottomPassedReverse={this.handleVisibility}
+          id="Home"
         >
           <Transition.Group animation="fade down" duration={500}>
             {visible && (
@@ -97,32 +109,35 @@ class DesktopContainer extends Component {
                 secondary={!fixed}
                 size="large"
               >
-                <Container>
-                  <Menu.Item
-                    as="a"
-                    name="home"
-                    active={activeItem === "home"}
-                    onClick={this.handleItemClick}
-                  >
-                    Home
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="introduction"
-                    active={activeItem === "introduction"}
-                    onClick={this.handleItemClick}
-                  >
-                    Introduction
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="about"
-                    active={activeItem === "about"}
-                    onClick={this.handleItemClick}
-                  >
-                    About
-                  </Menu.Item>
-                  {!this.props.isAuthenticated ? (
+                {!this.props.isAuthenticated ? (
+                  <Container>
+                    <Menu.Item
+                      as="a"
+                      name="home"
+                      href="#Home"
+                      active={activeItem === "home"}
+                      onClick={this.handleItemClick}
+                    >
+                      Home
+                    </Menu.Item>
+                    <Menu.Item
+                      as="a"
+                      href="#Introduction"
+                      name="introduction"
+                      active={activeItem === "introduction"}
+                      onClick={this.handleItemClick}
+                    >
+                      Introduction
+                    </Menu.Item>
+                    <Menu.Item
+                      as="a"
+                      name="about"
+                      href="#About"
+                      active={activeItem === "about"}
+                      onClick={this.handleItemClick}
+                    >
+                      About
+                    </Menu.Item>
                     <Menu.Item position="right">
                       <Button
                         onClick={this.handleOpenLogin}
@@ -138,7 +153,6 @@ class DesktopContainer extends Component {
                       <Button
                         style={{ marginLeft: "0.5em" }}
                         onClick={this.handleOpenSignUp}
-                        primary={fixed}
                         inverted
                         animated
                       >
@@ -148,7 +162,25 @@ class DesktopContainer extends Component {
                         </Button.Content>
                       </Button>
                     </Menu.Item>
-                  ) : (
+                  </Container>
+                ) : (
+                  <Container>
+                    <Menu.Item
+                      as="a"
+                      name="home"
+                      active={activeItem === "home"}
+                      onClick={e => this.handleRedirectNav(e, "")}
+                    >
+                      Home
+                    </Menu.Item>
+                    <Menu.Item
+                      as="a"
+                      name="library"
+                      active={activeItem === "library"}
+                      onClick={e => this.handleRedirectNav(e, "library")}
+                    >
+                      Library
+                    </Menu.Item>
                     <Menu.Item
                       position="right"
                       style={{ paddingTop: "0.65em", paddingBottom: "0.6em" }}
@@ -169,7 +201,6 @@ class DesktopContainer extends Component {
                           this.handleCloseProfileMenu();
                         }}
                         inverted
-                        primary={fixed}
                         animated
                       >
                         <Button.Content visible>Log out</Button.Content>
@@ -178,8 +209,8 @@ class DesktopContainer extends Component {
                         </Button.Content>
                       </Button>
                     </Menu.Item>
-                  )}
-                </Container>
+                  </Container>
+                )}
               </Menu>
             )}
           </Transition.Group>
@@ -214,4 +245,4 @@ DesktopContainer.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DesktopContainer);
+)(withRouter(DesktopContainer));

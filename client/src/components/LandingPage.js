@@ -46,7 +46,7 @@ ResponsiveContainer.propTypes = {
 
 const LandingPage = () => (
   <ResponsiveContainer>
-    <Segment style={{ padding: "8em 0em" }} vertical>
+    <Segment id="Introduction" style={{ padding: "8em 0em" }} vertical>
       <Grid container stackable verticalAlign="middle">
         <Grid.Row>
           <Grid.Column textAlign="center">
@@ -145,7 +145,7 @@ const LandingPage = () => (
         </Grid.Row>
       </Grid>
     </Segment>
-    <Segment style={{ padding: "8em 0em" }} vertical>
+    <Segment id="About" style={{ padding: "8em 0em" }} vertical>
       <Container text>
         <Header as="h3" style={{ fontSize: "2em", textAlign: "center" }}>
           How it works

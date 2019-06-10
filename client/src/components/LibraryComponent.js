@@ -1,7 +1,16 @@
 import React from "react";
-import { Button, Card, Dimmer, Grid, Icon, Image } from "semantic-ui-react";
+import {
+  Button,
+  Card,
+  Dimmer,
+  Grid,
+  Icon,
+  Image,
+  Responsive
+} from "semantic-ui-react";
 import { fetchMyBookPreviews } from "../redux/bookActionCreators";
 import { connect } from "react-redux";
+import ResponsiveContainerNav from "./ResponsiveContainerNav";
 
 const mapStateToProps = state => {
   return {
@@ -31,6 +40,7 @@ class BookCard extends React.Component {
             <Icon name="columns" />
           </Button.Content>
         </Button>
+        {/*  <div style={{ padding: "1em" }} /> */}
         <Button inverted animated size="huge">
           <Button.Content visible>Info</Button.Content>
           <Button.Content hidden>
@@ -82,9 +92,22 @@ class LibraryComponent extends React.Component {
       <BookCard bookPreview={bookPreview} />
     ));
     return (
-      <Grid doubling columns={6}>
-        {columns}
-      </Grid>
+      <ResponsiveContainerNav>
+        <div style={{ paddingTop: "5em" }}>
+          <Grid doubling columns={6}>
+            <Grid.Column verticalAlign="middle" textAlign="center">
+              <Button size="medium" circular style={{ padding: "3em" }}>
+                <Icon
+                  name="add"
+                  size="big"
+                  style={{ padding: "0em", margin: "0em" }}
+                />
+              </Button>
+            </Grid.Column>
+            {columns}
+          </Grid>
+        </div>
+      </ResponsiveContainerNav>
     );
   }
 }

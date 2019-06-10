@@ -6,15 +6,13 @@ import {
   Segment,
   Image,
   Icon,
-  Sidebar,
-  Visibility
+  Sidebar
 } from "semantic-ui-react";
 import LoginPage from "./LoginPage";
 import SignUpPage from "./SignUpPage";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import LandingPageHeading from "./LandingPageHeading";
 import { loginClearErrors, loginUser } from "../redux/authActionCreators";
 import { logoutUser } from "../redux/authActionCreators";
 import { withRouter } from "react-router-dom";
@@ -51,9 +49,6 @@ class MobileContainer extends Component {
     e.preventDefault();
     this.props.history.push("/" + path);
   };
-
-  hideFixedMenu = () => this.setState({ fixed: false });
-  showFixedMenu = () => this.setState({ fixed: true });
 
   handleSidebarHide = () => this.setState({ sidebarOpened: false });
   handleToggle = () => this.setState({ sidebarOpened: true });
@@ -107,43 +102,33 @@ class MobileContainer extends Component {
               vertical
               visible={sidebarOpened}
             >
+              <Menu.Item
+                as="a"
+                name="close"
+                style={{ textAlign: "right", paddingBottom: 40 }}
+                onClick={this.handleSidebarHide}
+              >
+                <Icon name="close" />
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="home"
+                active={activeItem === "home"}
+                onClick={e => this.handleRedirectNav(e, "")}
+              >
+                Home
+              </Menu.Item>
+              <Menu.Item
+                as="a"
+                name="library"
+                active={activeItem === "library"}
+                onClick={e => this.handleRedirectNav(e, "library")}
+              >
+                Library
+              </Menu.Item>
+
               {!this.props.isAuthenticated ? (
                 <div>
-                  <Menu.Item
-                    as="a"
-                    name="close"
-                    style={{ textAlign: "right", paddingBottom: 40 }}
-                    onClick={this.handleSidebarHide}
-                  >
-                    <Icon name="close" />
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="home"
-                    href="#Home"
-                    active={activeItem === "home"}
-                    onClick={this.handleItemClickAndSidebarHide}
-                  >
-                    Home
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="introduction"
-                    href="#Introduction"
-                    active={activeItem === "introduction"}
-                    onClick={this.handleItemClickAndSidebarHide}
-                  >
-                    Introduction
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="about"
-                    href="#About"
-                    active={activeItem === "about"}
-                    onClick={this.handleItemClickAndSidebarHide}
-                  >
-                    About
-                  </Menu.Item>
                   <Menu.Item
                     as="a"
                     name="login"
@@ -163,30 +148,6 @@ class MobileContainer extends Component {
                 </div>
               ) : (
                 <div>
-                  <Menu.Item
-                    as="a"
-                    name="close"
-                    style={{ textAlign: "right", paddingBottom: 40 }}
-                    onClick={this.handleSidebarHide}
-                  >
-                    <Icon name="close" />
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="home"
-                    active={activeItem === "home"}
-                    onClick={e => this.handleRedirectNav(e, "")}
-                  >
-                    Home
-                  </Menu.Item>
-                  <Menu.Item
-                    as="a"
-                    name="library"
-                    active={activeItem === "library"}
-                    onClick={e => this.handleRedirectNav(e, "library")}
-                  >
-                    Library
-                  </Menu.Item>
                   <Menu.Item
                     as="a"
                     name="signup"
@@ -213,75 +174,65 @@ class MobileContainer extends Component {
 
             <Sidebar.Pusher dimmed={sidebarOpened}>
               <Segment basic style={{ padding: "0em" }}>
-                <Visibility
-                  once={false}
-                  onBottomPassed={this.showFixedMenu}
-                  onBottomPassedReverse={this.hideFixedMenu}
-                >
-                  <Menu
-                    fixed="top"
-                    inverted
-                    pointing={!fixed}
-                    secondary={!fixed}
-                  >
-                    <Menu.Item onClick={this.handleToggle}>
-                      <Icon name="sidebar" />
+                <Menu fixed="top" inverted>
+                  <Menu.Item onClick={this.handleToggle}>
+                    <Icon name="sidebar" />
+                  </Menu.Item>
+                  {!this.props.isAuthenticated ? (
+                    <Menu.Item position="right">
+                      <Button
+                        onClick={this.handleOpenLogin}
+                        primary
+                        inverted
+                        animated
+                      >
+                        <Button.Content visible>Log in</Button.Content>
+                        <Button.Content hidden>
+                          <Icon name="sign-in" />
+                        </Button.Content>
+                      </Button>
+                      <Button
+                        style={{ marginLeft: "0.5em" }}
+                        onClick={this.handleOpenSignUp}
+                        primary
+                        inverted
+                        animated
+                      >
+                        <Button.Content visible>Sign up</Button.Content>
+                        <Button.Content hidden>
+                          <Icon name="user plus" />
+                        </Button.Content>
+                      </Button>
                     </Menu.Item>
-                    {!this.props.isAuthenticated ? (
-                      <Menu.Item position="right">
-                        <Button
-                          onClick={this.handleOpenLogin}
-                          primary={fixed}
-                          inverted
-                          animated
-                        >
-                          <Button.Content visible>Log in</Button.Content>
-                          <Button.Content hidden>
-                            <Icon name="sign-in" />
-                          </Button.Content>
-                        </Button>
-                        <Button
-                          style={{ marginLeft: "0.5em" }}
-                          onClick={this.handleOpenSignUp}
-                          inverted
-                          animated
-                        >
-                          <Button.Content visible>Sign up</Button.Content>
-                          <Button.Content hidden>
-                            <Icon name="user plus" />
-                          </Button.Content>
-                        </Button>
-                      </Menu.Item>
-                    ) : (
-                      <Menu.Item position="right">
-                        <Image
-                          src="https://react.semantic-ui.com/images/avatar/large/matthew.png"
-                          avatar
-                        />
-                        <span
-                          style={{ paddingRight: "2em", paddingLeft: "0.5em" }}
-                        >
-                          Joe
-                        </span>
+                  ) : (
+                    <Menu.Item position="right">
+                      <Image
+                        src="https://react.semantic-ui.com/images/avatar/large/matthew.png"
+                        avatar
+                      />
+                      <span
+                        style={{ paddingRight: "2em", paddingLeft: "0.5em" }}
+                      >
+                        Joe
+                      </span>
 
-                        <Button
-                          onClick={() => {
-                            this.props.loginUser();
-                            this.handleCloseProfileMenu();
-                          }}
-                          inverted
-                          animated
-                        >
-                          <Button.Content visible>Log out</Button.Content>
-                          <Button.Content hidden>
-                            <Icon name="sign-out" />
-                          </Button.Content>
-                        </Button>
-                      </Menu.Item>
-                    )}
-                  </Menu>
-                </Visibility>
-                <LandingPageHeading mobile />
+                      <Button
+                        onClick={() => {
+                          this.props.loginUser();
+                          this.handleCloseProfileMenu();
+                        }}
+                        inverted
+                        primary={fixed}
+                        animated
+                      >
+                        <Button.Content visible>Log out</Button.Content>
+                        <Button.Content hidden>
+                          <Icon name="sign-out" />
+                        </Button.Content>
+                      </Button>
+                    </Menu.Item>
+                  )}
+                </Menu>
                 <Dimmer
                   active={activeLogin}
                   onClickOutside={this.handleCloseLogin}
